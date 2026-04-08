@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx shadcn@latest add button input label select checkbox radio-group switch badge card tabs alert separator --yes)",
+      "Bash(mkdir -p src/components/ui src/lib)",
+      "Bash(cp -r @/components/ui/* src/components/ui/)",
+      "Bash(rm -rf @)",
+      "Bash(npx tsc:*)",
+      "Bash(npm run:*)",
+      "Bash(npm install:*)",
+      "Bash(timeout 8 npx vite --port 5173)",
+      "mcp__plugin_figma_figma__get_design_context",
+      "Bash(python3 -c \":*)",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(d.get\\(''''scripts'''', {}\\)\\)\")",
+      "WebFetch(domain:cdn.axcelerate.com.au)",
+      "mcp__plugin_figma_figma__get_screenshot",
+      "Bash(node -e \":*)"
+    ]
+  }
+}
