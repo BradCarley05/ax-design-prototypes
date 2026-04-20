@@ -1604,3 +1604,216 @@
 .ax-demo-picker-single { width: 240px; }
 .ax-demo-picker-range  { width: 300px; }
 
+/* ─── Mobile Checklist Preview ───────────────────────────────────────────── */
+
+.ax-mobile-preview {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-300) 0;
+}
+
+.ax-mobile-screen {
+  width: 376px;
+  min-height: 680px;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: var(--shadow-el4);
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-content);
+}
+
+.ax-mobile-header {
+  background: var(--primary-700);
+  padding: var(--space-150) var(--space-200);
+  min-height: 56px;
+  display: flex;
+  align-items: center;
+  gap: var(--space-050);
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.ax-mobile-header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(255,255,255,0.18) 1px, transparent 1px);
+  background-size: 12px 12px;
+  pointer-events: none;
+}
+
+.ax-mobile-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 24px;
+  background: linear-gradient(to bottom, transparent, var(--primary-700));
+  pointer-events: none;
+}
+
+.ax-mobile-back-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: var(--space-100);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border-radius: var(--radius-round);
+  position: relative;
+  z-index: 1;
+}
+
+.ax-mobile-back-icon {
+  color: var(--text-on-primary);
+  font-size: 20px;
+  display: block;
+  transform: scaleX(-1);
+}
+
+.ax-mobile-header-text {
+  flex: 1;
+  min-width: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.ax-mobile-header-title {
+  display: block;
+  color: var(--text-on-primary);
+  font-size: var(--font-size-large);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-medium);
+  font-family: var(--font-family);
+}
+
+.ax-mobile-header-subtitle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-075);
+  color: var(--text-on-primary);
+  font-size: var(--font-size-base);
+  font-family: var(--font-family);
+  opacity: 0.8;
+}
+
+.ax-mobile-dot {
+  display: inline-block;
+  width: 3px;
+  height: 3px;
+  border-radius: var(--radius-round);
+  background: currentColor;
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+
+.ax-mobile-content {
+  flex: 1;
+  padding: var(--space-200);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-300);
+  overflow-y: auto;
+  border: 1px solid var(--border-medium);
+  border-top: none;
+}
+
+.ax-mobile-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-125);
+}
+
+.ax-mobile-section-title {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  color: var(--text);
+  line-height: var(--line-height-base);
+  font-family: var(--font-family);
+  margin: 0;
+}
+
+.ax-mobile-list-item {
+  background: var(--bg-element);
+  border-radius: var(--radius-element);
+  box-shadow: var(--shadow-button);
+  padding: var(--space-150);
+  display: flex;
+  gap: var(--space-150);
+  align-items: center;
+}
+
+.ax-mobile-list-item-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.ax-mobile-list-item-title {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  color: var(--text);
+  line-height: var(--line-height-base);
+  font-family: var(--font-family);
+  margin: 0 0 var(--space-025) 0;
+}
+
+.ax-mobile-list-item-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-050);
+  font-size: var(--font-size-small);
+  color: var(--text-light);
+  line-height: var(--line-height-small);
+  font-family: var(--font-family);
+}
+
+.ax-mobile-thumbnail {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-button-sm);
+  background: var(--primary-200);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.ax-mobile-thumbnail--image {
+  background: var(--neutral-200);
+}
+
+.ax-mobile-thumbnail-icon {
+  font-size: 18px;
+  color: var(--text-primary);
+}
+
+.ax-mobile-status-block {
+  background: var(--positive-200);
+  border-radius: var(--radius-element);
+  padding: var(--space-125);
+  height: 38px;
+  display: flex;
+  align-items: center;
+  gap: var(--space-100);
+}
+
+.ax-mobile-status-icon {
+  font-size: 18px;
+  color: var(--text-positive);
+  flex-shrink: 0;
+}
+
+.ax-mobile-status-text {
+  font-size: var(--font-size-small);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-positive);
+  line-height: var(--line-height-small);
+  font-family: var(--font-family);
+}
+

@@ -39,6 +39,7 @@ import { Option, OptionStack } from '@/components/ui/option'
 import { Tooltip, TooltipProvider, TooltipRoot, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 import { DatePicker } from '@/components/ui/date-picker'
 import type { DateRange } from '@/components/ui/date-picker'
+import MobileChecklist from '@/MobileChecklist'
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -88,6 +89,7 @@ const NAV_ITEMS = [
   ['tooltip',        'Tooltip',        'icon-info-outline'],
   ['date-picker',    'Date Picker',    'icon-calendar-outline'],
   ['demo-cards',     'Demo Cards',     'icon-portrait-card-view'],
+  ['mobile-checklist', 'Mobile Checklist', 'icon-activities-tasks-list'],
 ] as const
 
 function useAsyncAutocomplete(fetcher: (q: string) => Promise<{ value: string; label: string }[]>) {
@@ -1065,6 +1067,12 @@ export default function App() {
                   <NavItem flat={false} icon={<i className="icon-mdi_help_outline-question-mark" />} disabled>Help (disabled)</NavItem>
                 </VerticalNavMenu>
               </Row>
+            </Section>
+          )}
+
+          {activeNav === 'mobile-checklist' && (
+            <Section title="Mobile Checklist">
+              <MobileChecklist />
             </Section>
           )}
 
