@@ -1626,7 +1626,7 @@
 .ax-mobile-header {
   background: var(--primary-700);
   padding: var(--space-150) var(--space-200);
-  min-height: 56px;
+  height: 56px;
   display: flex;
   align-items: center;
   gap: var(--space-050);
@@ -1690,6 +1690,9 @@
   font-weight: var(--font-weight-regular);
   line-height: var(--line-height-medium);
   font-family: var(--font-family);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .ax-mobile-header-subtitle {
