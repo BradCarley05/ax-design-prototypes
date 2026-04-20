@@ -1874,7 +1874,6 @@
   align-items: center;
   gap: var(--space-150);
   padding: var(--space-075) var(--space-200);
-  border-top: 1px solid var(--border-medium);
 }
 
 /* Navigable text button inside a checklist item (screen 3) */
