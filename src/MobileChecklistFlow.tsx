@@ -251,14 +251,13 @@ function ScreenChecklist({
                 const isAchieved = achievedItems.has(item.id)
                 return (
                   <div key={item.id} className="ax-mobile-cl-item">
-                    <button
-                      className="ax-mobile-cl-item-btn"
-                      onClick={() => onViewItem(item.id)}
-                    >
-                      <span className="ax-mobile-cl-item-text">{item.id}. {item.text}</span>
-                    </button>
+                    <span className="ax-mobile-cl-item-text">{item.id}. {item.text}</span>
                     <div className="ax-mobile-cl-item-btns">
-                      <button className="ax-mobile-cl-icon-btn" aria-label="Edit">
+                      <button
+                        className="ax-mobile-cl-icon-btn"
+                        aria-label="Edit"
+                        onClick={() => onViewItem(item.id)}
+                      >
                         <i className="icon-edit-outline" />
                       </button>
                       <button
