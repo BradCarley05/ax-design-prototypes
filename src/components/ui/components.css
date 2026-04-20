@@ -1615,7 +1615,7 @@
 .ax-mobile-screen {
   width: 376px;
   height: 750px;
-  border-radius: 24px;
+  border-radius: 12px;
   overflow: hidden;
   box-shadow: var(--shadow-el4);
   display: flex;
