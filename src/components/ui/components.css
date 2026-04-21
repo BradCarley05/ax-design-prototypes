@@ -1617,6 +1617,7 @@
   height: 750px;
   border-radius: var(--radius-card);
   overflow: hidden;
+  position: relative;
   box-shadow: var(--shadow-el4);
   display: flex;
   flex-direction: column;
@@ -1877,6 +1878,7 @@
   align-items: center;
   gap: var(--space-150);
   padding: var(--space-075) var(--space-200);
+  margin-bottom: var(--space-150);
 }
 
 /* Navigable text button inside a checklist item (screen 3) */
@@ -2010,10 +2012,9 @@
 }
 
 .ax-mobile-strip-tick {
-  font-size: 10px;
+  display: flex;
   color: var(--text-positive);
   opacity: 0.8;
-  line-height: 1;
 }
 
 /* Current item row below the strip */
@@ -2116,6 +2117,9 @@
 .ax-mobile-note {
   display: flex;
   gap: var(--space-150);
+}
+.ax-mobile-note + .ax-mobile-note {
+  margin-top: var(--space-200);
 }
 
 .ax-mobile-note-avatar {
@@ -2252,4 +2256,143 @@
   background: var(--positive-100);
   color: var(--text-positive);
 }
+
+/* ─── Note Modal (bottom sheet) ─────────────────────────────────────────────── */
+
+.ax-mobile-note-modal {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.ax-mobile-note-modal-sheet {
+  background: var(--bg-content);
+  border-radius: var(--radius-card) var(--radius-card) 0 0;
+  padding: var(--space-200);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-200);
+}
+
+.ax-mobile-note-modal-title {
+  font-size: var(--font-size-large);
+  font-weight: var(--font-weight-medium);
+  color: var(--text);
+  font-family: var(--font-family);
+  margin: 0;
+}
+
+.ax-mobile-note-modal-textarea {
+  width: 100%;
+  min-height: 80px;
+  border: none;
+  outline: none;
+  font-size: var(--font-size-base);
+  color: var(--text);
+  font-family: var(--font-family);
+  line-height: var(--line-height-medium);
+  resize: none;
+  background: none;
+  box-sizing: border-box;
+}
+.ax-mobile-note-modal-textarea::placeholder { color: var(--text-placeholder); }
+
+.ax-mobile-note-modal-photos {
+  display: flex;
+  gap: var(--space-150);
+}
+
+.ax-mobile-note-modal-photo {
+  position: relative;
+  width: 72px;
+  height: 72px;
+  border-radius: var(--radius-element);
+  background: var(--neutral-200);
+  flex-shrink: 0;
+}
+
+.ax-mobile-note-modal-remove {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 20px;
+  height: 20px;
+  border-radius: var(--radius-round);
+  background: var(--neutral-500);
+  border: none;
+  color: var(--on-neutral-500);
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0;
+}
+
+.ax-mobile-note-modal-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-150);
+  border-top: 1px solid var(--border-medium);
+  padding-top: var(--space-150);
+}
+
+.ax-mobile-note-modal-save {
+  height: 40px;
+  padding: 0 var(--space-200);
+  border: none;
+  border-radius: var(--radius-button);
+  background: var(--bg-button);
+  color: var(--text-button);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  font-family: var(--font-family);
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: var(--shadow-button);
+  flex-shrink: 0;
+  transition: background-color 0.1s ease-in-out;
+}
+.ax-mobile-note-modal-save:hover { background: var(--bg-button-hover); }
+
+/* ─── Note Context Menu ──────────────────────────────────────────────────────── */
+
+.ax-mobile-note-ctx-wrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.ax-mobile-note-ctx-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 20;
+  background: var(--bg-elevated);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-el4);
+  overflow: hidden;
+  min-width: 140px;
+}
+
+.ax-mobile-note-ctx-item {
+  display: block;
+  width: 100%;
+  padding: var(--space-150) var(--space-200);
+  border: none;
+  background: none;
+  text-align: left;
+  font-size: var(--font-size-base);
+  font-family: var(--font-family);
+  color: var(--text);
+  cursor: pointer;
+  transition: background-color 0.1s ease-in-out;
+}
+.ax-mobile-note-ctx-item:hover { background-color: var(--bg-secondary-hover); }
+.ax-mobile-note-ctx-item--danger { color: var(--text-negative); }
 
