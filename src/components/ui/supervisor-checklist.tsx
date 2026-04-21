@@ -1266,7 +1266,6 @@ export function SupervisorChecklistPage() {
     setToasts((prev) => prev.filter((t) => t.id !== id))
   }
 
-  const allItemIds = sections.flatMap((s) => s.items.map((i) => i.id))
   const achievedIds = new Set(markingItems.filter((m) => m.achievement === "achieved").map((m) => m.id))
 
   function toggleItem(id: string) {

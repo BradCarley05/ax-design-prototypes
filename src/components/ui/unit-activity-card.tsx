@@ -1,4 +1,3 @@
-import React from 'react'
 import { Card } from '@/components/ui/card'
 import { ThumbnailItem } from '@/components/ui/thumbnail-item'
 import { Avatar } from '@/components/ui/avatar'
