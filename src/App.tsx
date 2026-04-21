@@ -40,6 +40,8 @@ import { Tooltip, TooltipProvider, TooltipRoot, TooltipTrigger, TooltipContent }
 import { DatePicker } from '@/components/ui/date-picker'
 import type { DateRange } from '@/components/ui/date-picker'
 import MobileChecklistFlow from '@/MobileChecklistFlow'
+import { UnitActivityCard } from '@/components/ui/unit-activity-card'
+import { SupervisorChecklistPage } from '@/components/ui/supervisor-checklist'
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -89,6 +91,8 @@ const COMPONENT_ITEMS = [
   ['tooltip',        'Tooltip',        'icon-info-outline'],
   ['date-picker',    'Date Picker',    'icon-calendar-outline'],
   ['demo-cards',     'Demo Cards',     'icon-portrait-card-view'],
+  ['unit-card',         'Unit Activity Card',      'icon-tag'],
+  ['supervisor-checklist', 'Supervisor Checklist', 'icon-checkbox-checked'],
 ] as const
 
 const PROTOTYPE_ITEMS = [
@@ -149,6 +153,27 @@ export default function App() {
       label: u.login,
     }))
   })
+
+  if (activeNav === 'supervisor-checklist') {
+    return (
+      <TooltipProvider>
+        <div style={{ position: 'fixed', inset: 0, zIndex: 100 }}>
+          <SupervisorChecklistPage />
+        </div>
+        <button
+          onClick={() => setActiveNav('buttons')}
+          style={{
+            position: 'fixed', top: 12, right: 12, zIndex: 200,
+            background: 'rgba(0,0,0,0.5)', color: 'white',
+            border: 'none', borderRadius: 6, padding: '6px 12px',
+            cursor: 'pointer', fontSize: 13, fontWeight: 500,
+          }}
+        >
+          ✕ Close demo
+        </button>
+      </TooltipProvider>
+    )
+  }
 
   return (
     <TooltipProvider>
@@ -1063,6 +1088,70 @@ export default function App() {
                     </Box>
 
                 </Card>
+              </div>
+            </Section>
+          )}
+
+          {activeNav === 'unit-card' && (
+            <Section title="Unit Activity Card">
+              <div style={{ maxWidth: 480 }}>
+                <UnitActivityCard
+                  unitName="Licence to perform dogging"
+                  unitCode="CPCCLDG3001"
+                  activityCount={6}
+                  totalHours={32}
+                  onOpen={() => alert('Open unit')}
+                  activities={[
+                    {
+                      id: '1',
+                      title: 'Inspecting Lifting Gear (Pre-use Checks)',
+                      thumbnailSrc: 'https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?w=80&h=80&fit=crop',
+                      metric: '15 repetitions',
+                      logEntries: 1,
+                      completed: true,
+                    },
+                    {
+                      id: '2',
+                      title: 'Selecting the Right Hitch and Slinging Method',
+                      thumbnailSrc: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=80&h=80&fit=crop',
+                      metric: '20 hours',
+                      logEntries: 3,
+                      completed: true,
+                    },
+                    {
+                      id: '3',
+                      title: 'Directing Crane Movements via Hand Signals',
+                      thumbnailSrc: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=80&h=80&fit=crop',
+                      metric: '12 repetitions',
+                      logEntries: 7,
+                      completed: true,
+                    },
+                    {
+                      id: '4',
+                      title: 'Using Two-Way Radios (Whistles and Verbal Comms)',
+                      thumbnailSrc: 'https://images.unsplash.com/photo-1590418606746-018840f9eff8?w=80&h=80&fit=crop',
+                      metric: '15 repetitions',
+                      logEntries: 1,
+                      completed: true,
+                    },
+                    {
+                      id: '5',
+                      title: 'Assessing Ground Conditions and Hazards',
+                      thumbnailSrc: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=80&h=80&fit=crop',
+                      metric: '20 hours',
+                      logEntries: 3,
+                      completed: true,
+                    },
+                    {
+                      id: '6',
+                      title: 'Packing and Storing Gear (Post-Task)',
+                      thumbnailSrc: 'https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=80&h=80&fit=crop',
+                      metric: '0 repetitions',
+                      logEntries: 0,
+                      completed: false,
+                    },
+                  ]}
+                />
               </div>
             </Section>
           )}

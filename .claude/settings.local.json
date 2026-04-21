@@ -17,7 +17,27 @@
       "Bash(node -e \":*)",
       "Bash(ls -la /c/Users/Sam/source2/axcelerate-arc-prototyping-library/*.md)",
       "mcp__claude_ai_aXcelerate_Support_Docs__searchSupportArticles",
-      "mcp__claude_ai_Figma__get_design_context"
+      "mcp__claude_ai_Figma__get_design_context",
+      "Read(//Users/Brad.Carley/**)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://nexus.aws.axcelerate.com.au:8081/repository/ax_npm_group/)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" -L http://nexus.aws.axcelerate.com.au:8081/repository/ax_npm_group/)",
+      "mcp__figma__get_design_context",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:5173/)",
+      "Bash(grep -E \"\\\\.\\(tsx|ts\\)$\")",
+      "mcp__figma__get_screenshot",
+      "Bash(node_modules/.bin/tsc --noEmit)",
+      "Bash(node_modules/.bin/vite build:*)",
+      "Bash(ngrok version:*)",
+      "Bash(ngrok http:*)",
+      "Bash(curl -s http://localhost:4040/api/tunnels)",
+      "Bash(pkill -f ngrok)",
+      "Bash(git -C /Users/Brad.Carley/Downloads/arc-proto-library-test remote -v)",
+      "Bash(git -C /Users/Brad.Carley/Downloads/arc-proto-library-test remote add brad https://github.com/BradCarley05/aX-Design-Prototypes-Test.git)",
+      "Bash(git -C /Users/Brad.Carley/Downloads/arc-proto-library-test fetch brad)",
+      "Bash(git -C /Users/Brad.Carley/Downloads/arc-proto-library-test log brad/main --oneline -10)",
+      "Bash(git -C /Users/Brad.Carley/Downloads/arc-proto-library-test merge brad/main)",
+      "Bash(git -C /Users/Brad.Carley/Downloads/arc-proto-library-test diff src/App.tsx src/components/ui/components.css)",
+      "Bash(git -C /Users/Brad.Carley/Downloads/arc-proto-library-test stash)"
     ]
   }
 }
