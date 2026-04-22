@@ -1,4 +1,7 @@
 import React, { useState } from 'react'
+import './App.css'
+import { LearnerOnboardingUSI } from '@/pages/LearnerOnboardingUSI'
+import { OnboardingSurvey } from '@/pages/OnboardingSurvey'
 import { Button, IconButton } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -97,6 +100,8 @@ const PROTOTYPE_ITEMS = [
   ['mobile-checklist-flow',  'WBL Checklist Flow',   'icon-activities-tasks-list'],
   ['unit-card',              'Unit Activity Card',    'icon-tag'],
   ['supervisor-checklist',   'Supervisor Checklist',  'icon-checkbox-checked'],
+  ['usi-step',               'USI Step',              'icon-contact-add-outline'],
+  ['survey',                 'Survey',                'icon-note-outline'],
 ] as const
 
 function useAsyncAutocomplete(fetcher: (q: string) => Promise<{ value: string; label: string }[]>) {
@@ -1173,6 +1178,14 @@ export default function App() {
                 </VerticalNavMenu>
               </Row>
             </Section>
+          )}
+
+          {activeNav === 'usi-step' && (
+            <LearnerOnboardingUSI />
+          )}
+
+          {activeNav === 'survey' && (
+            <OnboardingSurvey />
           )}
 
 {activeNav === 'mobile-checklist-flow' && (

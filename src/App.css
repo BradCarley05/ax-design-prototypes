@@ -1,1 +1,422 @@
 /* App-specific styles */
+
+/* ─── Learner Onboarding — USI Step ─────────────────────────────────────── */
+
+.usi-page {
+  display: flex;
+  justify-content: center;
+  padding-top: var(--space-400);
+}
+
+.usi-widget {
+  background-color: var(--bg-content);
+  border-radius: var(--radius-widget);
+  box-shadow: var(--shadow-el4);
+  padding: 48px 64px 64px;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  width: 100%;
+  max-width: 712px;
+}
+
+.usi-widget-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-400);
+}
+
+.usi-widget-header-top {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-200);
+}
+
+.usi-avatar-circle {
+  width: 64px;
+  height: 64px;
+  border-radius: var(--radius-round);
+  background-color: var(--primary-200);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.usi-avatar-circle i {
+  font-size: 28px;
+  color: var(--primary-700);
+}
+
+.usi-widget-title {
+  font-size: var(--font-size-xxlarge);
+  font-weight: var(--font-weight-medium);
+  color: var(--text);
+}
+
+.usi-widget-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-300);
+}
+
+.usi-info-block {
+  display: flex;
+  gap: var(--space-150);
+  padding: var(--space-200);
+  background-color: var(--info-100);
+  border: 1px solid var(--info-500);
+  border-radius: var(--radius-card);
+}
+
+.usi-info-icon {
+  font-size: 24px;
+  line-height: 1;
+  flex-shrink: 0;
+  color: var(--text-info);
+}
+
+.usi-info-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-150);
+}
+
+.usi-info-title {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-medium);
+  color: var(--text-info);
+}
+
+.usi-info-text {
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-medium);
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-100);
+}
+
+.usi-info-text a {
+  color: var(--info-700);
+  text-decoration: underline;
+}
+
+.usi-instructions-text {
+  font-size: var(--font-size-large);
+  line-height: var(--line-height-large);
+  color: var(--text-light);
+  margin-bottom: var(--space-100);
+}
+
+.usi-instructions-list {
+  list-style: disc;
+  padding-left: var(--space-300);
+  font-size: var(--font-size-large);
+  line-height: var(--line-height-large);
+  color: var(--text-light);
+}
+
+.usi-field-row {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-150);
+}
+
+.usi-field-group {
+  width: 286px;
+  flex-shrink: 0;
+}
+
+/* ─── Onboarding Survey ───────────────────────────────────────────────────── */
+
+.survey-page {
+  min-height: 100vh;
+  background-color: #c9ddd0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px var(--space-400) var(--space-400);
+  gap: var(--space-300);
+}
+
+/* Logo */
+.survey-logo {
+  height: 48px;
+  width: auto;
+}
+
+/* Card */
+.survey-card {
+  background-color: var(--bg-content);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card-lg);
+  padding: 32px 40px 40px;
+  width: 100%;
+  max-width: 540px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-200);
+}
+
+.survey-title {
+  font-size: var(--font-size-large);
+  font-weight: var(--font-weight-medium);
+  color: var(--text);
+  line-height: var(--line-height-large);
+  text-align: center;
+}
+
+.survey-intro {
+  font-size: var(--font-size-base);
+  color: var(--text);
+  line-height: var(--line-height-large);
+}
+
+.survey-questions {
+  width: 100%;
+}
+
+.survey-question {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-075);
+}
+
+.survey-question-label {
+  display: flex;
+  gap: var(--space-050);
+  font-size: var(--font-size-base);
+  color: var(--text);
+  line-height: var(--line-height-large);
+}
+
+.survey-question-number {
+  flex-shrink: 0;
+  font-weight: var(--font-weight-medium);
+}
+
+.survey-question-control {
+  width: 100%;
+}
+
+.survey-textarea {
+  display: block;
+  width: 100%;
+  min-height: 80px;
+  border-radius: var(--radius-element);
+  border: 1px solid var(--border-dark);
+  background-color: var(--bg-element);
+  padding: var(--space-100) var(--space-125);
+  font-size: var(--font-size);
+  font-family: var(--font-family);
+  color: var(--text);
+  box-shadow: var(--shadow-element);
+  outline: none;
+  resize: vertical;
+  transition: box-shadow 0.15s ease-in-out;
+  box-sizing: border-box;
+}
+
+.survey-textarea:focus-visible {
+  box-shadow: var(--focus-shadow-border);
+}
+
+.survey-footer-text {
+  font-size: var(--font-size-base);
+  color: var(--text-light);
+  line-height: var(--line-height-large);
+  text-align: center;
+}
+
+.survey-submit-row {
+  display: flex;
+  justify-content: center;
+}
+
+/* ─── Survey Results Page ─────────────────────────────────────────────────── */
+
+.results-page {
+  min-height: 100vh;
+  background-color: #c9ddd0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px var(--space-400) var(--space-400);
+  gap: var(--space-300);
+}
+
+.results-card {
+  background-color: var(--bg-content);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card-lg);
+  padding: 32px 40px 40px;
+  width: 100%;
+  max-width: 780px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-300);
+}
+
+.results-header {
+  text-align: center;
+}
+
+.results-title {
+  font-size: var(--font-size-large);
+  font-weight: var(--font-weight-medium);
+  color: var(--text);
+  line-height: var(--line-height-large);
+}
+
+.results-date {
+  font-size: var(--font-size-base);
+  color: var(--text-light);
+  line-height: var(--line-height-large);
+}
+
+.results-filter-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-100);
+  font-size: var(--font-size-base);
+  color: var(--text);
+}
+
+.results-filter-select {
+  width: auto;
+  min-width: 160px;
+}
+
+.results-questions {
+  display: flex;
+  flex-direction: column;
+}
+
+.results-question {
+  padding: var(--space-300) 0;
+  border-top: 1px solid var(--border-light);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-200);
+}
+
+.results-question-header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-050);
+}
+
+.results-question-title {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  color: var(--text);
+  line-height: var(--line-height-large);
+}
+
+.results-question-number {
+  font-weight: var(--font-weight-bold);
+}
+
+.results-question-count {
+  font-size: var(--font-size-small);
+  color: var(--text-light);
+}
+
+/* Bar chart */
+.results-chart-wrap {
+  display: flex;
+  gap: var(--space-400);
+  align-items: flex-start;
+}
+
+.results-chart-area {
+  flex: 0 0 260px;
+  display: flex;
+  flex-direction: column;
+}
+
+.results-bar-track {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: var(--space-075);
+}
+
+.results-bar-row {
+  height: 20px;
+  background-color: var(--neutral-200);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.results-bar {
+  height: 100%;
+  border-radius: 2px;
+}
+
+.results-xaxis {
+  display: flex;
+  justify-content: space-between;
+}
+
+.results-tick {
+  font-size: var(--font-size-xsmall);
+  color: var(--text-light);
+  line-height: 1;
+}
+
+/* Legend */
+.results-legend {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-075);
+  flex: 1;
+}
+
+.results-legend-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-075);
+}
+
+.results-legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.results-legend-label {
+  font-size: var(--font-size-xsmall);
+  color: var(--text);
+  line-height: var(--line-height-small);
+}
+
+/* Text responses */
+.results-text-responses {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-200);
+}
+
+.results-response-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-050);
+}
+
+.results-response-name {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  color: var(--text);
+}
+
+.results-response-text {
+  font-size: var(--font-size-base);
+  color: var(--text-light);
+  line-height: var(--line-height-large);
+}
