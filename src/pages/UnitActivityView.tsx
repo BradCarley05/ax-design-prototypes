@@ -1,8 +1,7 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Avatar } from '@/components/ui/avatar'
 import { IconButton } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { NavItem, VerticalNavMenu } from '@/components/ui/nav'
 import { ThumbnailItem } from '@/components/ui/thumbnail-item'
 import { SingleSelect } from '@/components/ui/single-select'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -13,11 +12,15 @@ import { Card } from '@/components/ui/card'
 type Metric = 'hours' | 'repetitions'
 type Tab = 'criteria' | 'mapping'
 
-interface Activity {
+interface ActivityRecord {
   id: string
   title: string
   subline: string
   imageSrc: string
+}
+
+interface MappedActivity {
+  activityId: string
   count: number
   metric: Metric
 }
@@ -29,168 +32,200 @@ const METRIC_OPTIONS = [
   { value: 'repetitions', label: 'Repetitions' },
 ]
 
-const INITIAL_ACTIVITIES: Activity[] = [
+const ALL_ACTIVITIES: ActivityRecord[] = [
   {
     id: 'a1',
     title: 'Prepare sushi',
     subline: 'Cooking Operations',
-    imageSrc: 'https://images.unsplash.com/photo-1617196034183-421b4040ed20?w=80&h=80&fit=crop',
-    count: 888,
-    metric: 'hours',
+    imageSrc: 'https://images.unsplash.com/photo-1553621042-f6e147245754?w=80&h=80&fit=crop',
   },
   {
     id: 'a2',
     title: 'Prepare ramen',
     subline: 'Cooking Operations',
     imageSrc: 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=80&h=80&fit=crop',
-    count: 1,
-    metric: 'hours',
   },
   {
     id: 'a3',
     title: 'Knife skills',
     subline: 'Cooking Operations',
-    imageSrc: 'https://images.unsplash.com/photo-1566454825481-9c31bd88e27e?w=80&h=80&fit=crop',
-    count: 1,
-    metric: 'hours',
+    imageSrc: 'https://images.unsplash.com/photo-1574484284002-952d92456975?w=80&h=80&fit=crop',
+  },
+  {
+    id: 'a4',
+    title: 'Stock preparation',
+    subline: 'Kitchen Fundamentals',
+    imageSrc: 'https://images.unsplash.com/photo-1547592180-85f173990554?w=80&h=80&fit=crop',
+  },
+  {
+    id: 'a5',
+    title: 'Plating techniques',
+    subline: 'Advanced Cookery',
+    imageSrc: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=80&h=80&fit=crop',
+  },
+  {
+    id: 'a6',
+    title: 'Sauce making',
+    subline: 'Cooking Operations',
+    imageSrc: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=80&h=80&fit=crop',
+  },
+  {
+    id: 'a7',
+    title: 'Pastry fundamentals',
+    subline: 'Baking & Pastry',
+    imageSrc: 'https://images.unsplash.com/photo-1486427944299-d1955d23e34d?w=80&h=80&fit=crop',
+  },
+  {
+    id: 'a8',
+    title: 'Food safety compliance',
+    subline: 'Food Hygiene',
+    imageSrc: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=80&h=80&fit=crop',
+  },
+  {
+    id: 'a9',
+    title: 'Bread making',
+    subline: 'Baking & Pastry',
+    imageSrc: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=80&h=80&fit=crop',
+  },
+  {
+    id: 'a10',
+    title: 'Seafood preparation',
+    subline: 'Cooking Operations',
+    imageSrc: 'https://images.unsplash.com/photo-1534482421-64566f976cfa?w=80&h=80&fit=crop',
+  },
+  {
+    id: 'a11',
+    title: 'Temperature control',
+    subline: 'Food Safety',
+    imageSrc: 'https://images.unsplash.com/photo-1556909172-54557c7e4fb7?w=80&h=80&fit=crop',
+  },
+  {
+    id: 'a12',
+    title: 'Menu planning',
+    subline: 'Kitchen Management',
+    imageSrc: 'https://images.unsplash.com/photo-1559847844-5315695dadae?w=80&h=80&fit=crop',
+  },
+  {
+    id: 'a13',
+    title: 'Butchery basics',
+    subline: 'Cooking Operations',
+    imageSrc: 'https://images.unsplash.com/photo-1603360946369-dc9bb6258143?w=80&h=80&fit=crop',
+  },
+  {
+    id: 'a14',
+    title: 'Dairy & cheese handling',
+    subline: 'Kitchen Fundamentals',
+    imageSrc: 'https://images.unsplash.com/photo-1452195100486-9cc805987862?w=80&h=80&fit=crop',
+  },
+  {
+    id: 'a15',
+    title: 'Vegetable cookery',
+    subline: 'Cooking Operations',
+    imageSrc: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?w=80&h=80&fit=crop',
+  },
+  {
+    id: 'a16',
+    title: 'Deep frying techniques',
+    subline: 'Advanced Cookery',
+    imageSrc: 'https://images.unsplash.com/photo-1562967914-608f82629710?w=80&h=80&fit=crop',
+  },
+  {
+    id: 'a17',
+    title: 'Dessert preparation',
+    subline: 'Baking & Pastry',
+    imageSrc: 'https://images.unsplash.com/photo-1488477181946-6428a0291777?w=80&h=80&fit=crop',
+  },
+  {
+    id: 'a18',
+    title: 'Allergen awareness',
+    subline: 'Food Safety',
+    imageSrc: 'https://images.unsplash.com/photo-1506484381205-f7945653044d?w=80&h=80&fit=crop',
+  },
+  {
+    id: 'a19',
+    title: 'Coffee & beverage service',
+    subline: 'Front of House',
+    imageSrc: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=80&h=80&fit=crop',
+  },
+  {
+    id: 'a20',
+    title: 'Kitchen equipment maintenance',
+    subline: 'Kitchen Management',
+    imageSrc: 'https://images.unsplash.com/photo-1556909172-54557c7e4fb7?w=80&h=80&fit=crop',
   },
 ]
 
-// ─── Sidebar nav ──────────────────────────────────────────────────────────────
+// Activities linked to this unit via the activity mapping tab
+const UNIT_MAPPED_IDS = new Set(['a1', 'a2', 'a3', 'a4', 'a5', 'a6', 'a7', 'a8'])
 
-function GlobalNav() {
-  return (
-    <div style={{
-      width: 168,
-      minWidth: 168,
-      backgroundColor: 'var(--bg-element)',
-      borderRight: '1px solid var(--border-medium)',
-      display: 'flex',
-      flexDirection: 'column',
-      height: '100%',
-      flexShrink: 0,
-      overflow: 'hidden',
-    }}>
-      {/* Logo */}
-      <div style={{
-        padding: '10px 12px',
-        display: 'flex',
-        alignItems: 'center',
-        gap: 6,
-        borderBottom: '1px solid var(--border-medium)',
-        flexShrink: 0,
-      }}>
-        <div style={{
-          width: 22, height: 22,
-          backgroundColor: 'var(--primary-700)',
-          borderRadius: 4,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          flexShrink: 0,
-        }}>
-          <span style={{ color: '#fff', fontSize: 11, fontWeight: 700 }}>A</span>
-        </div>
-        <span style={{ fontWeight: 600, fontSize: 13, color: 'var(--text)', flex: 1 }}>aXcelerate</span>
-        <i className="icon-chevron-down" style={{ color: 'var(--text-light)', fontSize: 12 }} />
-      </div>
-
-      {/* New + Search */}
-      <div style={{ padding: '4px 6px', borderBottom: '1px solid var(--border-light)', flexShrink: 0 }}>
-        <NavItem flat icon={<i className="icon-plus" />}>New</NavItem>
-        <NavItem flat icon={<i className="icon-contact-user-search-people" />}>Search</NavItem>
-      </div>
-
-      {/* Main nav items */}
-      <nav style={{ flex: 1, overflowY: 'auto', padding: '4px 6px' }}>
-        <VerticalNavMenu style={{ width: 'auto' }}>
-          <NavItem flat icon={<i className="icon-home" />}>Dashboard</NavItem>
-          <NavItem flat icon={<i className="icon-contact-user-search-people" />}>Contacts</NavItem>
-          <NavItem flat icon={<i className="icon-mdi_help_outline-question-mark" />}>Help Requests</NavItem>
-          <NavItem flat icon={<i className="icon-calendar-outline" />}>Workshops</NavItem>
-          <NavItem flat icon={<i className="icon-portrait-card-view" />}>Classes</NavItem>
-          <NavItem flat icon={<i className="icon-image" />}>Resources</NavItem>
-          <NavItem flat icon={<i className="icon-activities-tasks-list" />}>Learning</NavItem>
-          <NavItem flat icon={<i className="icon-checkbox-checked" />}>Assessments</NavItem>
-          <NavItem flat icon={<i className="icon-note-outline" />}>Marking</NavItem>
-          <NavItem flat icon={<i className="icon-navigation" />}>Work-based Learning</NavItem>
-          {/* Expanded sub-items */}
-          <div style={{ paddingLeft: 16 }}>
-            <NavItem flat icon={<i className="icon-contact-add-outline" />}>Placements</NavItem>
-            <NavItem flat icon={<i className="icon-contact-add-outline" />}>Host Employers</NavItem>
-            <NavItem flat active icon={<i className="icon-settings1" />}>Configuration</NavItem>
-          </div>
-          <NavItem flat icon={<i className="icon-tag" />}>Skills</NavItem>
-          <NavItem flat icon={<i className="icon-rocket-launch-publish" />}>Marketing</NavItem>
-          <NavItem flat icon={<i className="icon-binary" />}>Finance</NavItem>
-          <NavItem flat icon={<i className="icon-checkbox-checked" />}>Tasks</NavItem>
-          <NavItem flat icon={<i className="icon-note-outline" />}>Surveys</NavItem>
-          <NavItem flat icon={<i className="icon-activities-tasks-list" />}>Reports</NavItem>
-        </VerticalNavMenu>
-      </nav>
-
-      {/* Bottom links */}
-      <div style={{ padding: '4px 6px', borderTop: '1px solid var(--border-light)', flexShrink: 0 }}>
-        <NavItem flat icon={<i className="icon-calendar-outline" />}>Calendar</NavItem>
-        <NavItem flat icon={<i className="icon-navigation" />}>Quick navigation guide</NavItem>
-        <NavItem flat icon={<i className="icon-note-outline" />}>Give feedback</NavItem>
-        <NavItem flat icon={<i className="icon-mdi_help_outline-question-mark" />}>Help</NavItem>
-      </div>
-
-      {/* User */}
-      <div style={{
-        padding: '10px 12px',
-        borderTop: '1px solid var(--border-medium)',
-        display: 'flex', alignItems: 'center', gap: 8,
-        flexShrink: 0,
-      }}>
-        <Avatar mode="initials" shape="circle" initials="JJ" />
-        <span style={{
-          fontSize: 'var(--font-size-small)', fontWeight: 500, color: 'var(--text)',
-          flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-        }}>
-          Jacob Jones
-        </span>
-        <i className="icon-notification" style={{ color: 'var(--text-light)', fontSize: 16 }} />
-      </div>
-    </div>
-  )
-}
+// Activities already added to the criteria requirements on load
+const INITIAL_CRITERIA: MappedActivity[] = [
+  { activityId: 'a1', count: 888, metric: 'hours' },
+  { activityId: 'a2', count: 1, metric: 'hours' },
+  { activityId: 'a3', count: 1, metric: 'hours' },
+  { activityId: 'a4', count: 4, metric: 'repetitions' },
+]
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export function UnitActivityView() {
   const [tab, setTab] = useState<Tab>('criteria')
   const [hourRequirement, setHourRequirement] = useState(0)
-  const [activities, setActivities] = useState<Activity[]>(INITIAL_ACTIVITIES)
+  const [mapped, setMapped] = useState<MappedActivity[]>(INITIAL_CRITERIA)
   const [search, setSearch] = useState('')
+  const [searchOpen, setSearchOpen] = useState(false)
+  const searchRef = useRef<HTMLDivElement>(null)
 
-  function removeActivity(id: string) {
-    setActivities(prev => prev.filter(a => a.id !== id))
+  const criteriaIds = new Set(mapped.map(m => m.activityId))
+
+  const matchingActivities = search
+    ? ALL_ACTIVITIES.filter(a =>
+        !criteriaIds.has(a.id) && (
+          a.title.toLowerCase().includes(search.toLowerCase()) ||
+          a.subline.toLowerCase().includes(search.toLowerCase())
+        )
+      )
+    : []
+
+  const mappedResults = matchingActivities.filter(a => UNIT_MAPPED_IDS.has(a.id))
+  const unmappedResults = matchingActivities.filter(a => !UNIT_MAPPED_IDS.has(a.id))
+
+  function addActivity(record: ActivityRecord) {
+    setMapped(prev => [...prev, { activityId: record.id, count: 1, metric: 'hours' }])
+    setSearch('')
+    setSearchOpen(false)
   }
 
-  function updateCount(id: string, count: number) {
-    setActivities(prev => prev.map(a => a.id === id ? { ...a, count } : a))
+  function removeActivity(activityId: string) {
+    setMapped(prev => prev.filter(m => m.activityId !== activityId))
   }
 
-  function updateMetric(id: string, metric: string) {
-    setActivities(prev => prev.map(a => a.id === id ? { ...a, metric: metric as Metric } : a))
+  function updateCount(activityId: string, count: number) {
+    setMapped(prev => prev.map(m => m.activityId === activityId ? { ...m, count } : m))
   }
 
-  const filtered = activities.filter(a =>
-    !search ||
-    a.title.toLowerCase().includes(search.toLowerCase()) ||
-    a.subline.toLowerCase().includes(search.toLowerCase())
-  )
+  function updateMetric(activityId: string, metric: string) {
+    setMapped(prev => prev.map(m => m.activityId === activityId ? { ...m, metric: metric as Metric } : m))
+  }
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
+        setSearchOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [])
 
   return (
     <div style={{
       display: 'flex',
       height: '100vh',
       overflow: 'hidden',
-      backgroundColor: 'var(--bg-secondary)',
+      backgroundColor: 'var(--bg-element)',
       fontFamily: 'var(--font-family)',
     }}>
-      <GlobalNav />
-
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
 
         {/* Page header */}
@@ -200,38 +235,23 @@ export function UnitActivityView() {
           padding: '0 var(--space-300)',
           flexShrink: 0,
         }}>
-          {/* Breadcrumb */}
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: 4,
-            padding: '10px 0 0',
-            fontSize: 'var(--font-size-xsmall)',
-          }}>
-            <span style={{ color: 'var(--primary-700)', cursor: 'pointer' }}>
-              Certificate III in Commercial Cookery
-            </span>
-            <i className="icon-chevron-right" style={{ fontSize: 12, color: 'var(--text-light)' }} />
-          </div>
-
           {/* Title row */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 0 0' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '12px 0 0' }}>
             <button style={{
               background: 'none', border: 'none', cursor: 'pointer', padding: 4,
               display: 'flex', alignItems: 'center', color: 'var(--text-light)', borderRadius: 4,
+              flexShrink: 0,
             }}>
               <i className="icon-arrow-right-short" style={{ fontSize: 18, transform: 'rotate(180deg)' }} />
             </button>
-            <Avatar mode="icon" shape="square" theme="flat" icon={<i className="icon-note-outline" />} />
-            <div>
-              <div style={{ fontSize: 'var(--font-size-base)', fontWeight: 600, color: 'var(--text)' }}>
-                Use food preparation equipment
-              </div>
-              <div style={{ fontSize: 'var(--font-size-xsmall)', color: 'var(--text-light)' }}>
-                SITHCCC023
-              </div>
-            </div>
+            <ThumbnailItem
+              avatar={<Avatar mode="icon" shape="square" theme="flat" icon={<i className="icon-note-outline" />} />}
+              title="Use food preparation equipment"
+              subline="SITHCCC023"
+            />
           </div>
 
-          {/* Tabs — visual only, content rendered conditionally below */}
+          {/* Tabs */}
           <Tabs value={tab} onValueChange={v => setTab(v as Tab)} style={{ marginTop: 8 }}>
             <TabsList>
               <TabsTrigger value="criteria">Unit criteria</TabsTrigger>
@@ -244,7 +264,7 @@ export function UnitActivityView() {
         <div style={{ flex: 1, overflowY: 'auto', padding: 'var(--space-300)' }}>
 
           {tab === 'criteria' && (
-            <div style={{ maxWidth: 700, display: 'flex', flexDirection: 'column', gap: 'var(--space-300)' }}>
+            <div style={{ maxWidth: 700, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 'var(--space-300)' }}>
 
               {/* Unit hour requirement */}
               <section style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-150)' }}>
@@ -277,63 +297,126 @@ export function UnitActivityView() {
                   avatar={<Avatar mode="icon" shape="square" theme="flat" icon={<i className="icon-activities-tasks-list" />} />}
                   title="Activity requirements"
                 />
-                <Input
-                  placeholder="Search activities to add"
-                  leftIcon={<i className="icon-contact-user-search-people" />}
-                  value={search}
-                  onChange={e => setSearch(e.target.value)}
-                />
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-100)' }}>
-                  {filtered.map(activity => (
-                    <ThumbnailItem
-                      key={activity.id}
-                      variant="card"
-                      avatar={
-                        <Avatar
-                          mode="image"
-                          shape="square"
-                          theme="flat"
-                          src={activity.imageSrc}
-                          alt={activity.title}
-                        />
-                      }
-                      title={activity.title}
-                      subline={activity.subline}
-                      rightSlot={
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                          <div style={{ width: 64 }}>
-                            <Input
-                              type="number"
-                              value={activity.count}
-                              onChange={e => updateCount(activity.id, Number(e.target.value))}
-                            />
-                          </div>
-                          <SingleSelect
-                            value={activity.metric}
-                            onChange={v => updateMetric(activity.id, v)}
-                            options={METRIC_OPTIONS}
-                          />
-                          <IconButton
-                            icon="icon-x-thick"
-                            size={20}
-                            buttonStyle={false}
-                            tooltip="Remove activity"
-                            onClick={() => removeActivity(activity.id)}
-                          />
-                        </div>
-                      }
-                    />
-                  ))}
-                  {filtered.length === 0 && (
+
+                {/* Search with results dropdown */}
+                <div ref={searchRef} style={{ position: 'relative' }}>
+                  <Input
+                    placeholder="Search activities to add"
+                    leftIcon={<i className="icon-contact-user-search-people" />}
+                    value={search}
+                    onChange={e => { setSearch(e.target.value); setSearchOpen(true) }}
+                    onFocus={() => setSearchOpen(true)}
+                  />
+                  {searchOpen && search && (
                     <div style={{
-                      padding: 'var(--space-200)',
-                      textAlign: 'center',
-                      fontSize: 'var(--font-size-small)',
-                      color: 'var(--text-light)',
+                      position: 'absolute',
+                      top: 'calc(100% + 4px)',
+                      left: 0, right: 0,
+                      maxHeight: 400,
+                      overflowY: 'auto',
+                      scrollBehavior: 'smooth',
+                      WebkitOverflowScrolling: 'touch',
+                      zIndex: 20,
+                      backgroundColor: 'var(--bg-element)',
+                      border: '1px solid var(--border-medium)',
+                      borderRadius: 'var(--radius-card)',
+                      boxShadow: 'var(--shadow-el4)',
+                      padding: '0 var(--space-100) var(--space-100)',
                     }}>
-                      No activities match your search.
+                      {matchingActivities.length === 0 && (
+                        <div style={{ padding: 'var(--space-200)', textAlign: 'center', fontSize: 'var(--font-size-small)', color: 'var(--text-light)' }}>
+                          No activities found.
+                        </div>
+                      )}
+                      {mappedResults.length > 0 && (
+                        <>
+                          <div style={{ position: 'sticky', top: 0, zIndex: 10, backgroundColor: 'var(--bg-element)', display: 'flex', alignItems: 'flex-start', gap: 'var(--space-125)', padding: '12px var(--space-100) var(--space-050)', fontSize: 'var(--font-size-xsmall)', fontWeight: 500, color: 'var(--text-light)', textTransform: 'uppercase', letterSpacing: '0.04em', width: '100%' }}>
+                            Mapped activities
+                          </div>
+                          {mappedResults.map(record => (
+                            <div
+                              key={record.id}
+                              onClick={() => addActivity(record)}
+                              style={{ cursor: 'pointer', borderRadius: 'var(--radius-element)', padding: 'var(--space-100)' }}
+                              onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'var(--bg-secondary)')}
+                              onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
+                            >
+                              <ThumbnailItem
+                                avatar={<Avatar mode="image" shape="square" theme="flat" src={record.imageSrc} alt={record.title} />}
+                                title={record.title}
+                                subline={record.subline}
+                                rightSlot={<i className="icon-plus" style={{ fontSize: 14, color: 'var(--text-light)' }} />}
+                              />
+                            </div>
+                          ))}
+                        </>
+                      )}
+                      {unmappedResults.length > 0 && (
+                        <>
+                          <div style={{ position: 'sticky', top: 0, zIndex: 10, backgroundColor: 'var(--bg-element)', display: 'flex', alignItems: 'flex-start', gap: 'var(--space-125)', padding: '12px var(--space-100) var(--space-050)', fontSize: 'var(--font-size-xsmall)', fontWeight: 500, color: 'var(--text-light)', textTransform: 'uppercase', letterSpacing: '0.04em', width: '100%' }}>
+                            Unmapped activities
+                          </div>
+                          {unmappedResults.map(record => (
+                            <div
+                              key={record.id}
+                              onClick={() => addActivity(record)}
+                              style={{ cursor: 'pointer', borderRadius: 'var(--radius-element)', padding: 'var(--space-100)' }}
+                              onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'var(--bg-secondary)')}
+                              onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
+                            >
+                              <ThumbnailItem
+                                avatar={<Avatar mode="image" shape="square" theme="flat" src={record.imageSrc} alt={record.title} />}
+                                title={record.title}
+                                subline={record.subline}
+                                rightSlot={<i className="icon-plus" style={{ fontSize: 14, color: 'var(--text-light)' }} />}
+                              />
+                            </div>
+                          ))}
+                        </>
+                      )}
                     </div>
                   )}
+                </div>
+
+                {/* Mapped activity list */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-100)' }}>
+                  {mapped.map(m => {
+                    const record = ALL_ACTIVITIES.find(a => a.id === m.activityId)!
+                    return (
+                      <ThumbnailItem
+                        key={m.activityId}
+                        variant="card"
+                        avatar={
+                          <Avatar mode="image" shape="square" theme="flat" src={record.imageSrc} alt={record.title} />
+                        }
+                        title={record.title}
+                        subline={record.subline}
+                        rightSlot={
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                            <div style={{ width: 64 }}>
+                              <Input
+                                type="number"
+                                value={m.count}
+                                onChange={e => updateCount(m.activityId, Number(e.target.value))}
+                              />
+                            </div>
+                            <SingleSelect
+                              value={m.metric}
+                              onChange={v => updateMetric(m.activityId, v)}
+                              options={METRIC_OPTIONS}
+                            />
+                            <IconButton
+                              icon="icon-x-thick"
+                              size={20}
+                              buttonStyle={false}
+                              tooltip="Remove activity"
+                              onClick={() => removeActivity(m.activityId)}
+                            />
+                          </div>
+                        }
+                      />
+                    )
+                  })}
                 </div>
               </section>
 
@@ -343,6 +426,7 @@ export function UnitActivityView() {
           {tab === 'mapping' && (
             <div style={{
               maxWidth: 700,
+              margin: '0 auto',
               padding: 'var(--space-200)',
               fontSize: 'var(--font-size-small)',
               color: 'var(--text-light)',
