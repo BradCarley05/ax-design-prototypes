@@ -11,6 +11,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
+      'ax-arc-prototyping/styles': path.resolve(__dirname, 'node_modules/ax-arc-prototyping/dist/ax-arc-prototyping.css'),
     },
   },
 })
