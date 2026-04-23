@@ -1,131 +1,77 @@
-import { useState, useRef, useEffect, type RefObject, type ChangeEvent } from 'react'
+import { useState } from 'react'
 import { Avatar } from '@/components/ui/avatar'
-import { Button } from '@/components/ui/button'
+import { IconButton } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { NavItem, VerticalNavMenu } from '@/components/ui/nav'
-import { StatusChip } from '@/components/ui/status-chip'
-import type { StatusChipType } from '@/components/ui/status-chip'
+import { ThumbnailItem } from '@/components/ui/thumbnail-item'
+import { SingleSelect } from '@/components/ui/single-select'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Card } from '@/components/ui/card'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-type AssignedSupervisor = { id: string; name: string; initials: string }
+type Metric = 'hours' | 'repetitions'
+type Tab = 'criteria' | 'mapping'
 
-interface Requirement {
+interface Activity {
   id: string
-  studentName: string
-  studentInitials: string
-  tasksRequired: number
-  tasksCompleted: number
-  status: 'not-started' | 'interim' | 'submitted' | 'positive'
-  supervisors: AssignedSupervisor[]
-}
-
-interface SupervisorOption {
-  id: string
-  name: string
-  initials: string
-  role: string
+  title: string
+  subline: string
+  imageSrc: string
+  count: number
+  metric: Metric
 }
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
 
-const SUPERVISOR_OPTIONS: SupervisorOption[] = [
-  { id: 's1', name: 'Francesca Bertolucci', initials: 'FB', role: 'Training Manager' },
-  { id: 's2', name: 'Philippa Jones',       initials: 'PJ', role: 'Workplace Supervisor' },
-  { id: 's3', name: 'Tim Mason',            initials: 'TM', role: 'Workplace Supervisor' },
-  { id: 's4', name: 'Julian Bradford',      initials: 'JB', role: 'Training Manager' },
-  { id: 's5', name: 'Rachel Nguyen',        initials: 'RN', role: 'Workplace Supervisor' },
-  { id: 's6', name: 'Carlos Mendez',        initials: 'CM', role: 'Workplace Supervisor' },
-  { id: 's7', name: 'Amira Hassan',         initials: 'AH', role: 'Training Manager' },
-  { id: 's8', name: 'Derek Walcott',        initials: 'DW', role: 'Workplace Supervisor' },
-  { id: 's9', name: 'Sofia Petrov',         initials: 'SP', role: 'Training Manager' },
-  { id: 's10', name: 'Ben Cartwright',      initials: 'BC', role: 'Workplace Supervisor' },
+const METRIC_OPTIONS = [
+  { value: 'hours', label: 'Hours' },
+  { value: 'repetitions', label: 'Repetitions' },
 ]
 
-const INITIAL_REQUIREMENTS: Requirement[] = [
+const INITIAL_ACTIVITIES: Activity[] = [
   {
-    id: 'r1',
-    studentName: 'Paige Jones',
-    studentInitials: 'PJ',
-    tasksRequired: 8,
-    tasksCompleted: 0,
-    status: 'not-started',
-    supervisors: [{ id: 's1', name: 'Francesca Bertolucci', initials: 'FB' }],
+    id: 'a1',
+    title: 'Prepare sushi',
+    subline: 'Cooking Operations',
+    imageSrc: 'https://images.unsplash.com/photo-1617196034183-421b4040ed20?w=80&h=80&fit=crop',
+    count: 888,
+    metric: 'hours',
   },
   {
-    id: 'r2',
-    studentName: 'Fredo Corta',
-    studentInitials: 'FC',
-    tasksRequired: 8,
-    tasksCompleted: 3,
-    status: 'interim',
-    supervisors: [
-      { id: 's2', name: 'Philippa Jones', initials: 'PJ' },
-      { id: 's3', name: 'Tim Mason', initials: 'TM' },
-    ],
+    id: 'a2',
+    title: 'Prepare ramen',
+    subline: 'Cooking Operations',
+    imageSrc: 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=80&h=80&fit=crop',
+    count: 1,
+    metric: 'hours',
   },
   {
-    id: 'r3',
-    studentName: 'Yuki Tanaka',
-    studentInitials: 'YT',
-    tasksRequired: 8,
-    tasksCompleted: 8,
-    status: 'submitted',
-    supervisors: [{ id: 's4', name: 'Julian Bradford', initials: 'JB' }],
-  },
-  {
-    id: 'r4',
-    studentName: 'Amara Okafor',
-    studentInitials: 'AO',
-    tasksRequired: 8,
-    tasksCompleted: 8,
-    status: 'positive',
-    supervisors: [],
+    id: 'a3',
+    title: 'Knife skills',
+    subline: 'Cooking Operations',
+    imageSrc: 'https://images.unsplash.com/photo-1566454825481-9c31bd88e27e?w=80&h=80&fit=crop',
+    count: 1,
+    metric: 'hours',
   },
 ]
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
-const STATUS_CHIP_MAP: Record<Requirement['status'], StatusChipType> = {
-  'not-started': 'base',
-  interim:       'interim',
-  submitted:     'submitted',
-  positive:      'positive',
-}
-
-const STATUS_LABEL: Record<Requirement['status'], string> = {
-  'not-started': 'Not started',
-  interim:       'In progress',
-  submitted:     'Submitted',
-  positive:      'Achieved',
-}
-
-// ─── Global nav ───────────────────────────────────────────────────────────────
+// ─── Sidebar nav ──────────────────────────────────────────────────────────────
 
 function GlobalNav() {
-  const navItems = [
-    { icon: 'icon-home-outline',               label: 'Dashboard' },
-    { icon: 'icon-contact-user-search-people', label: 'My Groups' },
-    { icon: 'icon-activities-tasks-list',      label: 'Activities',    active: true },
-    { icon: 'icon-checkbox-checked',           label: 'Assessments' },
-    { icon: 'icon-note-outline',               label: 'Workbooks' },
-    { icon: 'icon-calendar-outline',           label: 'Calendar' },
-    { icon: 'icon-tag',                        label: 'Records' },
-    { icon: 'icon-navigation',                 label: 'Configuration' },
-  ]
-
   return (
     <div style={{
-      width: 220,
-      minWidth: 220,
+      width: 168,
+      minWidth: 168,
       backgroundColor: 'var(--bg-element)',
       borderRight: '1px solid var(--border-medium)',
       display: 'flex',
       flexDirection: 'column',
       height: '100%',
       flexShrink: 0,
+      overflow: 'hidden',
     }}>
-      {/* Brand */}
+      {/* Logo */}
       <div style={{
         padding: '10px 12px',
         display: 'flex',
@@ -143,30 +89,51 @@ function GlobalNav() {
         }}>
           <span style={{ color: '#fff', fontSize: 11, fontWeight: 700 }}>A</span>
         </div>
-        <span style={{ fontWeight: 600, fontSize: 14, color: 'var(--text)' }}>aXcelerate</span>
-        <i className="icon-chevron-down" style={{ color: 'var(--text-light)', fontSize: 14, marginLeft: 'auto' }} />
+        <span style={{ fontWeight: 600, fontSize: 13, color: 'var(--text)', flex: 1 }}>aXcelerate</span>
+        <i className="icon-chevron-down" style={{ color: 'var(--text-light)', fontSize: 12 }} />
       </div>
 
-      {/* Search */}
-      <div style={{ padding: '8px 10px', borderBottom: '1px solid var(--border-medium)', flexShrink: 0 }}>
-        <Input placeholder="Search…" />
+      {/* New + Search */}
+      <div style={{ padding: '4px 6px', borderBottom: '1px solid var(--border-light)', flexShrink: 0 }}>
+        <NavItem flat icon={<i className="icon-plus" />}>New</NavItem>
+        <NavItem flat icon={<i className="icon-contact-user-search-people" />}>Search</NavItem>
       </div>
 
-      {/* Nav items */}
-      <nav style={{ flex: 1, overflow: 'auto', padding: '6px 8px' }}>
+      {/* Main nav items */}
+      <nav style={{ flex: 1, overflowY: 'auto', padding: '4px 6px' }}>
         <VerticalNavMenu style={{ width: 'auto' }}>
-          {navItems.map((item) => (
-            <NavItem
-              key={item.label}
-              flat={false}
-              active={item.active ?? false}
-              icon={<i className={item.icon} />}
-            >
-              {item.label}
-            </NavItem>
-          ))}
+          <NavItem flat icon={<i className="icon-home" />}>Dashboard</NavItem>
+          <NavItem flat icon={<i className="icon-contact-user-search-people" />}>Contacts</NavItem>
+          <NavItem flat icon={<i className="icon-mdi_help_outline-question-mark" />}>Help Requests</NavItem>
+          <NavItem flat icon={<i className="icon-calendar-outline" />}>Workshops</NavItem>
+          <NavItem flat icon={<i className="icon-portrait-card-view" />}>Classes</NavItem>
+          <NavItem flat icon={<i className="icon-image" />}>Resources</NavItem>
+          <NavItem flat icon={<i className="icon-activities-tasks-list" />}>Learning</NavItem>
+          <NavItem flat icon={<i className="icon-checkbox-checked" />}>Assessments</NavItem>
+          <NavItem flat icon={<i className="icon-note-outline" />}>Marking</NavItem>
+          <NavItem flat icon={<i className="icon-navigation" />}>Work-based Learning</NavItem>
+          {/* Expanded sub-items */}
+          <div style={{ paddingLeft: 16 }}>
+            <NavItem flat icon={<i className="icon-contact-add-outline" />}>Placements</NavItem>
+            <NavItem flat icon={<i className="icon-contact-add-outline" />}>Host Employers</NavItem>
+            <NavItem flat active icon={<i className="icon-settings1" />}>Configuration</NavItem>
+          </div>
+          <NavItem flat icon={<i className="icon-tag" />}>Skills</NavItem>
+          <NavItem flat icon={<i className="icon-rocket-launch-publish" />}>Marketing</NavItem>
+          <NavItem flat icon={<i className="icon-binary" />}>Finance</NavItem>
+          <NavItem flat icon={<i className="icon-checkbox-checked" />}>Tasks</NavItem>
+          <NavItem flat icon={<i className="icon-note-outline" />}>Surveys</NavItem>
+          <NavItem flat icon={<i className="icon-activities-tasks-list" />}>Reports</NavItem>
         </VerticalNavMenu>
       </nav>
+
+      {/* Bottom links */}
+      <div style={{ padding: '4px 6px', borderTop: '1px solid var(--border-light)', flexShrink: 0 }}>
+        <NavItem flat icon={<i className="icon-calendar-outline" />}>Calendar</NavItem>
+        <NavItem flat icon={<i className="icon-navigation" />}>Quick navigation guide</NavItem>
+        <NavItem flat icon={<i className="icon-note-outline" />}>Give feedback</NavItem>
+        <NavItem flat icon={<i className="icon-mdi_help_outline-question-mark" />}>Help</NavItem>
+      </div>
 
       {/* User */}
       <div style={{
@@ -175,309 +142,14 @@ function GlobalNav() {
         display: 'flex', alignItems: 'center', gap: 8,
         flexShrink: 0,
       }}>
-        <Avatar mode="initials" shape="circle" initials="JB" />
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 'var(--font-size-small)', fontWeight: 500, color: 'var(--text)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-            Jacob Jones
-          </div>
-          <div style={{ fontSize: 'var(--font-size-xsmall)', color: 'var(--text-light)' }}>Training Manager</div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-// ─── Supervisor dropdown ───────────────────────────────────────────────────────
-
-function SupervisorDropdown({
-  assigned,
-  onAdd,
-  onRemove,
-  onClose,
-  anchorRef,
-}: {
-  assigned: AssignedSupervisor[]
-  onAdd: (sup: SupervisorOption) => void
-  onRemove: (id: string) => void
-  onClose: () => void
-  anchorRef: RefObject<HTMLElement>
-}) {
-  const [query, setQuery] = useState('')
-  const panelRef = useRef<HTMLDivElement>(null)
-  const assignedIds = new Set(assigned.map((a) => a.id))
-
-  const filtered = SUPERVISOR_OPTIONS.filter(
-    (s) =>
-      !assignedIds.has(s.id) &&
-      (s.name.toLowerCase().includes(query.toLowerCase()) ||
-        s.role.toLowerCase().includes(query.toLowerCase()))
-  )
-
-  useEffect(() => {
-    function handleClick(e: MouseEvent) {
-      if (
-        panelRef.current &&
-        !panelRef.current.contains(e.target as Node) &&
-        anchorRef.current &&
-        !anchorRef.current.contains(e.target as Node)
-      ) {
-        onClose()
-      }
-    }
-    document.addEventListener('mousedown', handleClick)
-    return () => document.removeEventListener('mousedown', handleClick)
-  }, [onClose, anchorRef])
-
-  return (
-    <div
-      ref={panelRef}
-      style={{
-        position: 'absolute',
-        top: '100%',
-        right: 0,
-        zIndex: 50,
-        width: 280,
-        backgroundColor: 'var(--bg-elevated)',
-        border: '1px solid var(--border-medium)',
-        borderRadius: 'var(--radius-card)',
-        boxShadow: 'var(--shadow-el4)',
-        marginTop: 4,
-        display: 'flex',
-        flexDirection: 'column',
-        overflow: 'hidden',
-      }}
-    >
-      {/* Header */}
-      <div style={{
-        padding: '10px 12px',
-        borderBottom: '1px solid var(--border-medium)',
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        flexShrink: 0,
-      }}>
-        <span style={{ fontSize: 'var(--font-size-small)', fontWeight: 600, color: 'var(--text)' }}>
-          Add supervisors
+        <Avatar mode="initials" shape="circle" initials="JJ" />
+        <span style={{
+          fontSize: 'var(--font-size-small)', fontWeight: 500, color: 'var(--text)',
+          flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+        }}>
+          Jacob Jones
         </span>
-        <button
-          onClick={onClose}
-          style={{
-            background: 'none', border: 'none', cursor: 'pointer',
-            padding: 2, borderRadius: 4,
-            color: 'var(--text-light)', display: 'flex', alignItems: 'center',
-          }}
-        >
-          <i className="icon-x-thick" style={{ fontSize: 14 }} />
-        </button>
-      </div>
-
-      {/* Assigned supervisors */}
-      {assigned.length > 0 && (
-        <div style={{ padding: '8px 12px', borderBottom: '1px solid var(--border-light)', flexShrink: 0 }}>
-          <div style={{ fontSize: 'var(--font-size-xsmall)', color: 'var(--text-light)', marginBottom: 6, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-            Assigned
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-            {assigned.map((sup) => (
-              <div key={sup.id} style={{
-                display: 'flex', alignItems: 'center', gap: 8,
-                padding: '4px 6px',
-                borderRadius: 'var(--radius-element)',
-                backgroundColor: 'var(--primary-100)',
-              }}>
-                <Avatar mode="initials" shape="circle" initials={sup.initials} />
-                <span style={{ flex: 1, fontSize: 'var(--font-size-small)', color: 'var(--text)', fontWeight: 500 }}>
-                  {sup.name}
-                </span>
-                <button
-                  onClick={() => onRemove(sup.id)}
-                  style={{
-                    background: 'none', border: 'none', cursor: 'pointer',
-                    padding: 2, color: 'var(--text-light)', display: 'flex', alignItems: 'center',
-                    borderRadius: 3,
-                  }}
-                >
-                  <i className="icon-x-thick" style={{ fontSize: 12 }} />
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Search */}
-      <div style={{ padding: '8px 12px', flexShrink: 0 }}>
-        <Input
-          value={query}
-          onChange={(e: ChangeEvent<HTMLInputElement>) => setQuery(e.target.value)}
-          placeholder="Search supervisors…"
-          autoFocus
-        />
-      </div>
-
-      {/* Scrollable list */}
-      <div style={{ overflowY: 'auto', maxHeight: 220, padding: '0 8px 8px' }}>
-        {filtered.length === 0 ? (
-          <div style={{
-            padding: '16px 0', textAlign: 'center',
-            fontSize: 'var(--font-size-small)', color: 'var(--text-light)',
-          }}>
-            No supervisors found
-          </div>
-        ) : (
-          filtered.map((sup) => (
-            <button
-              key={sup.id}
-              onClick={() => { onAdd(sup); setQuery('') }}
-              style={{
-                width: '100%', background: 'none', border: 'none', cursor: 'pointer',
-                display: 'flex', alignItems: 'center', gap: 8,
-                padding: '7px 8px',
-                borderRadius: 'var(--radius-element)',
-                textAlign: 'left',
-              }}
-              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--bg-secondary-hover)')}
-              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
-            >
-              <Avatar mode="initials" shape="circle" initials={sup.initials} />
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: 'var(--font-size-small)', fontWeight: 500, color: 'var(--text)' }}>
-                  {sup.name}
-                </div>
-                <div style={{ fontSize: 'var(--font-size-xsmall)', color: 'var(--text-light)' }}>
-                  {sup.role}
-                </div>
-              </div>
-              <i className="icon-plus" style={{ fontSize: 14, color: 'var(--text-light)', flexShrink: 0 }} />
-            </button>
-          ))
-        )}
-      </div>
-    </div>
-  )
-}
-
-// ─── Requirement row ──────────────────────────────────────────────────────────
-
-function RequirementRow({
-  req,
-  onUpdateSupervisors,
-}: {
-  req: Requirement
-  onUpdateSupervisors: (id: string, supervisors: AssignedSupervisor[]) => void
-}) {
-  const [dropdownOpen, setDropdownOpen] = useState(false)
-  const triggerRef = useRef<HTMLButtonElement>(null)
-
-  function handleAdd(sup: SupervisorOption) {
-    onUpdateSupervisors(req.id, [...req.supervisors, { id: sup.id, name: sup.name, initials: sup.initials }])
-  }
-
-  function handleRemove(supId: string) {
-    onUpdateSupervisors(req.id, req.supervisors.filter((s) => s.id !== supId))
-  }
-
-  const progressPct = req.tasksRequired > 0
-    ? Math.round((req.tasksCompleted / req.tasksRequired) * 100)
-    : 0
-
-  return (
-    <div style={{
-      display: 'flex',
-      alignItems: 'center',
-      gap: 'var(--space-150)',
-      padding: '10px var(--space-200)',
-      borderBottom: '1px solid var(--border-light)',
-      position: 'relative',
-    }}>
-      <Avatar mode="initials" shape="circle" initials={req.studentInitials} />
-
-      {/* Name + task count */}
-      <div style={{ flex: '0 0 160px', minWidth: 0 }}>
-        <div style={{ fontSize: 'var(--font-size-small)', fontWeight: 500, color: 'var(--text)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-          {req.studentName}
-        </div>
-        <div style={{ fontSize: 'var(--font-size-xsmall)', color: 'var(--text-light)' }}>
-          {req.tasksCompleted}/{req.tasksRequired} tasks
-        </div>
-      </div>
-
-      {/* Progress bar */}
-      <div style={{ flex: '0 0 80px' }}>
-        <div style={{ height: 4, borderRadius: 2, backgroundColor: 'var(--neutral-200)', overflow: 'hidden' }}>
-          <div style={{
-            height: '100%',
-            width: `${progressPct}%`,
-            borderRadius: 2,
-            backgroundColor:
-              req.status === 'positive'  ? 'var(--positive-700)' :
-              req.status === 'submitted' ? 'var(--primary-700)' :
-              req.status === 'interim'   ? 'var(--warning-700)' :
-              'var(--neutral-300)',
-            transition: 'width 0.3s ease',
-          }} />
-        </div>
-      </div>
-
-      {/* Status chip */}
-      <div style={{ flex: '0 0 110px' }}>
-        <StatusChip type={STATUS_CHIP_MAP[req.status]} size="small" icon>
-          {STATUS_LABEL[req.status]}
-        </StatusChip>
-      </div>
-
-      {/* Supervisors + add button */}
-      <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 6, justifyContent: 'flex-end', position: 'relative' }}>
-        {/* Stacked avatars */}
-        {req.supervisors.length > 0 && (
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            {req.supervisors.slice(0, 3).map((sup, i) => (
-              <div key={sup.id} style={{ marginLeft: i === 0 ? 0 : -8, zIndex: 3 - i }}>
-                <Avatar mode="initials" shape="circle" initials={sup.initials} />
-              </div>
-            ))}
-            {req.supervisors.length > 3 && (
-              <div style={{
-                width: 36, height: 36, borderRadius: '50%',
-                backgroundColor: 'var(--neutral-200)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                marginLeft: -8,
-                fontSize: 11, fontWeight: 600, color: 'var(--text-light)',
-              }}>
-                +{req.supervisors.length - 3}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Add/manage button */}
-        <button
-          ref={triggerRef}
-          onClick={() => setDropdownOpen((v) => !v)}
-          style={{
-            background: 'none',
-            border: '1px dashed var(--border-dark)',
-            borderRadius: 'var(--radius-round)',
-            padding: '3px 8px',
-            cursor: 'pointer',
-            display: 'flex', alignItems: 'center', gap: 4,
-            color: 'var(--text-light)',
-            fontSize: 'var(--font-size-xsmall)',
-            fontFamily: 'var(--font-family)',
-            whiteSpace: 'nowrap',
-          }}
-        >
-          <i className="icon-plus" style={{ fontSize: 12 }} />
-          {req.supervisors.length === 0 ? 'Add supervisor' : 'Manage'}
-        </button>
-
-        {dropdownOpen && (
-          <SupervisorDropdown
-            assigned={req.supervisors}
-            onAdd={handleAdd}
-            onRemove={handleRemove}
-            onClose={() => setDropdownOpen(false)}
-            anchorRef={triggerRef as RefObject<HTMLElement>}
-          />
-        )}
+        <i className="icon-notification" style={{ color: 'var(--text-light)', fontSize: 16 }} />
       </div>
     </div>
   )
@@ -486,18 +158,28 @@ function RequirementRow({
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export function UnitActivityView() {
-  const [requirements, setRequirements] = useState<Requirement[]>(INITIAL_REQUIREMENTS)
-  const [activeTab, setActiveTab] = useState<'activities' | 'requests'>('activities')
+  const [tab, setTab] = useState<Tab>('criteria')
+  const [hourRequirement, setHourRequirement] = useState(0)
+  const [activities, setActivities] = useState<Activity[]>(INITIAL_ACTIVITIES)
+  const [search, setSearch] = useState('')
 
-  function updateSupervisors(reqId: string, supervisors: AssignedSupervisor[]) {
-    setRequirements((prev) =>
-      prev.map((r) => (r.id === reqId ? { ...r, supervisors } : r))
-    )
+  function removeActivity(id: string) {
+    setActivities(prev => prev.filter(a => a.id !== id))
   }
 
-  const completedCount = requirements.filter(
-    (r) => r.status === 'positive' || r.status === 'submitted'
-  ).length
+  function updateCount(id: string, count: number) {
+    setActivities(prev => prev.map(a => a.id === id ? { ...a, count } : a))
+  }
+
+  function updateMetric(id: string, metric: string) {
+    setActivities(prev => prev.map(a => a.id === id ? { ...a, metric: metric as Metric } : a))
+  }
+
+  const filtered = activities.filter(a =>
+    !search ||
+    a.title.toLowerCase().includes(search.toLowerCase()) ||
+    a.subline.toLowerCase().includes(search.toLowerCase())
+  )
 
   return (
     <div style={{
@@ -505,188 +187,170 @@ export function UnitActivityView() {
       height: '100vh',
       overflow: 'hidden',
       backgroundColor: 'var(--bg-secondary)',
-      minWidth: 900,
       fontFamily: 'var(--font-family)',
     }}>
       <GlobalNav />
 
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
 
-        {/* Top bar */}
+        {/* Page header */}
         <div style={{
-          padding: '0 var(--space-300)',
           backgroundColor: 'var(--bg-element)',
           borderBottom: '1px solid var(--border-medium)',
+          padding: '0 var(--space-300)',
           flexShrink: 0,
         }}>
           {/* Breadcrumb */}
           <div style={{
-            display: 'flex', alignItems: 'center', gap: 6,
+            display: 'flex', alignItems: 'center', gap: 4,
             padding: '10px 0 0',
             fontSize: 'var(--font-size-xsmall)',
-            color: 'var(--text-light)',
           }}>
-            <span>Students</span>
-            <i className="icon-chevron-right" style={{ fontSize: 12 }} />
-            <span>Fredo Corta</span>
-            <i className="icon-chevron-right" style={{ fontSize: 12 }} />
-            <span>Units</span>
-            <i className="icon-chevron-right" style={{ fontSize: 12 }} />
-            <span style={{ color: 'var(--text)', fontWeight: 500 }}>Certificate III in Commercial Cookery</span>
+            <span style={{ color: 'var(--primary-700)', cursor: 'pointer' }}>
+              Certificate III in Commercial Cookery
+            </span>
+            <i className="icon-chevron-right" style={{ fontSize: 12, color: 'var(--text-light)' }} />
           </div>
 
           {/* Title row */}
-          <div style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            padding: '8px 0 0',
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <button style={{
-                background: 'none', border: 'none', cursor: 'pointer',
-                padding: 4, borderRadius: 4, color: 'var(--text-light)',
-                display: 'flex', alignItems: 'center',
-              }}>
-                <i className="icon-arrow-right-short" style={{ fontSize: 20, transform: 'rotate(180deg)' }} />
-              </button>
-              <div>
-                <h1 style={{ margin: 0, fontSize: 'var(--font-size-large)', fontWeight: 600, color: 'var(--text)' }}>
-                  Prepare food to meet special dietary requirements
-                </h1>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 2 }}>
-                  <span style={{ fontSize: 'var(--font-size-xsmall)', color: 'var(--text-light)' }}>SITHCCC026</span>
-                  <span style={{ color: 'var(--border-dark)' }}>·</span>
-                  <span style={{ fontSize: 'var(--font-size-xsmall)', color: 'var(--text-light)' }}>Workplace activity</span>
-                </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 0 0' }}>
+            <button style={{
+              background: 'none', border: 'none', cursor: 'pointer', padding: 4,
+              display: 'flex', alignItems: 'center', color: 'var(--text-light)', borderRadius: 4,
+            }}>
+              <i className="icon-arrow-right-short" style={{ fontSize: 18, transform: 'rotate(180deg)' }} />
+            </button>
+            <Avatar mode="icon" shape="square" theme="flat" icon={<i className="icon-note-outline" />} />
+            <div>
+              <div style={{ fontSize: 'var(--font-size-base)', fontWeight: 600, color: 'var(--text)' }}>
+                Use food preparation equipment
               </div>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <Button variant="secondary" leftIcon={<i className="icon-edit-outline" />}>
-                Edit activity
-              </Button>
-              <Button variant="default" leftIcon={<i className="icon-plus" />}>
-                Add student
-              </Button>
+              <div style={{ fontSize: 'var(--font-size-xsmall)', color: 'var(--text-light)' }}>
+                SITHCCC023
+              </div>
             </div>
           </div>
 
-          {/* Tabs */}
-          <div style={{ display: 'flex', gap: 0, marginTop: 12 }}>
-            {(['activities', 'requests'] as const).map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                style={{
-                  background: 'none', border: 'none', cursor: 'pointer',
-                  padding: '8px 16px',
-                  fontSize: 'var(--font-size-small)',
-                  fontFamily: 'var(--font-family)',
-                  fontWeight: activeTab === tab ? 600 : 400,
-                  color: activeTab === tab ? 'var(--primary-700)' : 'var(--text-light)',
-                  borderBottom: activeTab === tab ? '2px solid var(--primary-700)' : '2px solid transparent',
-                  transition: 'var(--transition-standard)',
-                }}
-              >
-                {tab === 'activities' ? 'My Activities' : 'Activity Requests'}
-              </button>
-            ))}
-          </div>
+          {/* Tabs — visual only, content rendered conditionally below */}
+          <Tabs value={tab} onValueChange={v => setTab(v as Tab)} style={{ marginTop: 8 }}>
+            <TabsList>
+              <TabsTrigger value="criteria">Unit criteria</TabsTrigger>
+              <TabsTrigger value="mapping">Activity mapping</TabsTrigger>
+            </TabsList>
+          </Tabs>
         </div>
 
-        {/* Scrollable content */}
-        <div style={{ flex: 1, overflow: 'auto', padding: 'var(--space-300)' }}>
+        {/* Scrollable content area */}
+        <div style={{ flex: 1, overflowY: 'auto', padding: 'var(--space-300)' }}>
 
-          {/* Summary card */}
-          <div style={{
-            backgroundColor: 'var(--bg-element)',
-            borderRadius: 'var(--radius-card)',
-            border: '1px solid var(--border-medium)',
-            padding: 'var(--space-200)',
-            marginBottom: 'var(--space-200)',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 'var(--space-300)',
-          }}>
+          {tab === 'criteria' && (
+            <div style={{ maxWidth: 700, display: 'flex', flexDirection: 'column', gap: 'var(--space-300)' }}>
+
+              {/* Unit hour requirement */}
+              <section style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-150)' }}>
+                <ThumbnailItem
+                  avatar={<Avatar mode="icon" shape="square" theme="flat" icon={<i className="icon-calendar-outline" />} />}
+                  title="Unit hour requirement"
+                />
+                <Card direction="row" style={{ alignItems: 'center', gap: 'var(--space-200)' }}>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: 'var(--font-size-base)', fontWeight: 500, color: 'var(--text)', marginBottom: 4 }}>
+                      Required hours for unit completion
+                    </div>
+                    <div style={{ fontSize: 'var(--font-size-small)', color: 'var(--text-light)' }}>
+                      Completed by logging hours against any activity mapped to this unit. Leave as 0 if not required.
+                    </div>
+                  </div>
+                  <div style={{ flexShrink: 0, width: 72 }}>
+                    <Input
+                      type="number"
+                      value={hourRequirement}
+                      onChange={e => setHourRequirement(Number(e.target.value))}
+                    />
+                  </div>
+                </Card>
+              </section>
+
+              {/* Activity requirements */}
+              <section style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-150)' }}>
+                <ThumbnailItem
+                  avatar={<Avatar mode="icon" shape="square" theme="flat" icon={<i className="icon-activities-tasks-list" />} />}
+                  title="Activity requirements"
+                />
+                <Input
+                  placeholder="Search activities to add"
+                  leftIcon={<i className="icon-contact-user-search-people" />}
+                  value={search}
+                  onChange={e => setSearch(e.target.value)}
+                />
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-100)' }}>
+                  {filtered.map(activity => (
+                    <ThumbnailItem
+                      key={activity.id}
+                      variant="card"
+                      avatar={
+                        <Avatar
+                          mode="image"
+                          shape="square"
+                          theme="flat"
+                          src={activity.imageSrc}
+                          alt={activity.title}
+                        />
+                      }
+                      title={activity.title}
+                      subline={activity.subline}
+                      rightSlot={
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                          <div style={{ width: 64 }}>
+                            <Input
+                              type="number"
+                              value={activity.count}
+                              onChange={e => updateCount(activity.id, Number(e.target.value))}
+                            />
+                          </div>
+                          <SingleSelect
+                            value={activity.metric}
+                            onChange={v => updateMetric(activity.id, v)}
+                            options={METRIC_OPTIONS}
+                          />
+                          <IconButton
+                            icon="icon-x-thick"
+                            size={20}
+                            buttonStyle={false}
+                            tooltip="Remove activity"
+                            onClick={() => removeActivity(activity.id)}
+                          />
+                        </div>
+                      }
+                    />
+                  ))}
+                  {filtered.length === 0 && (
+                    <div style={{
+                      padding: 'var(--space-200)',
+                      textAlign: 'center',
+                      fontSize: 'var(--font-size-small)',
+                      color: 'var(--text-light)',
+                    }}>
+                      No activities match your search.
+                    </div>
+                  )}
+                </div>
+              </section>
+
+            </div>
+          )}
+
+          {tab === 'mapping' && (
             <div style={{
-              width: 44, height: 44, borderRadius: 'var(--radius-element)',
-              backgroundColor: 'var(--primary-100)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              flexShrink: 0,
+              maxWidth: 700,
+              padding: 'var(--space-200)',
+              fontSize: 'var(--font-size-small)',
+              color: 'var(--text-light)',
             }}>
-              <i className="icon-activities-tasks-list" style={{ fontSize: 22, color: 'var(--primary-700)' }} />
+              Activity mapping content goes here.
             </div>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 'var(--font-size-base)', fontWeight: 600, color: 'var(--text)', marginBottom: 2 }}>
-                Required task for unit completion
-              </div>
-              <div style={{ fontSize: 'var(--font-size-small)', color: 'var(--text-light)' }}>
-                Learner must complete all 8 tasks to satisfy this activity requirement.
-              </div>
-            </div>
-            <div style={{ textAlign: 'right', flexShrink: 0 }}>
-              <div style={{ fontSize: 'var(--font-size-huge)', fontWeight: 700, color: 'var(--text)', lineHeight: 1 }}>
-                {completedCount}/{requirements.length}
-              </div>
-              <div style={{ fontSize: 'var(--font-size-xsmall)', color: 'var(--text-light)', marginTop: 2 }}>
-                students completed
-              </div>
-            </div>
-          </div>
+          )}
 
-          {/* Requirements table */}
-          <div style={{
-            backgroundColor: 'var(--bg-element)',
-            borderRadius: 'var(--radius-card)',
-            border: '1px solid var(--border-medium)',
-            overflow: 'hidden',
-          }}>
-            {/* Table header */}
-            <div style={{
-              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-              padding: '12px var(--space-200)',
-              borderBottom: '1px solid var(--border-medium)',
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <span style={{ fontSize: 'var(--font-size-base)', fontWeight: 600, color: 'var(--text)' }}>
-                  Activity requirements
-                </span>
-                <span style={{
-                  backgroundColor: 'var(--neutral-200)',
-                  borderRadius: 'var(--radius-round)',
-                  padding: '1px 7px',
-                  fontSize: 'var(--font-size-xsmall)',
-                  fontWeight: 600,
-                  color: 'var(--text-light)',
-                }}>
-                  {requirements.length}
-                </span>
-              </div>
-              <Button variant="secondary" leftIcon={<i className="icon-filter-outline" />}>
-                Filter
-              </Button>
-            </div>
-
-            {/* Column labels */}
-            <div style={{
-              display: 'flex', alignItems: 'center', gap: 'var(--space-150)',
-              padding: '6px var(--space-200)',
-              backgroundColor: 'var(--bg-secondary)',
-              borderBottom: '1px solid var(--border-light)',
-            }}>
-              <div style={{ width: 36, flexShrink: 0 }} />
-              <div style={{ flex: '0 0 160px', fontSize: 'var(--font-size-xsmall)', fontWeight: 500, color: 'var(--text-light)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Student</div>
-              <div style={{ flex: '0 0 80px', fontSize: 'var(--font-size-xsmall)', fontWeight: 500, color: 'var(--text-light)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Progress</div>
-              <div style={{ flex: '0 0 110px', fontSize: 'var(--font-size-xsmall)', fontWeight: 500, color: 'var(--text-light)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Status</div>
-              <div style={{ flex: 1, fontSize: 'var(--font-size-xsmall)', fontWeight: 500, color: 'var(--text-light)', textTransform: 'uppercase', letterSpacing: '0.04em', textAlign: 'right' }}>Supervisors</div>
-            </div>
-
-            {requirements.map((req) => (
-              <RequirementRow
-                key={req.id}
-                req={req}
-                onUpdateSupervisors={updateSupervisors}
-              />
-            ))}
-          </div>
         </div>
       </div>
     </div>
