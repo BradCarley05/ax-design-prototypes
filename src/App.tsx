@@ -208,26 +208,6 @@ export default function App() {
     )
   }
 
-  if (activeNav === 'cake-order') {
-    return (
-      <TooltipProvider>
-        <div style={{ position: 'fixed', inset: 0, zIndex: 100 }}>
-          <CakeOrderForm />
-        </div>
-        <button
-          onClick={() => setActiveNav('buttons')}
-          style={{
-            position: 'fixed', top: 12, right: 12, zIndex: 200,
-            background: 'rgba(0,0,0,0.5)', color: 'white',
-            border: 'none', borderRadius: 6, padding: '6px 12px',
-            cursor: 'pointer', fontSize: 13, fontWeight: 500,
-          }}
-        >
-          ✕ Close demo
-        </button>
-      </TooltipProvider>
-    )
-  }
 
   if (activeNav === 'unit-activity-view') {
     return (
