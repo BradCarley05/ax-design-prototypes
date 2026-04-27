@@ -24,13 +24,17 @@ type NavEntry = NavItem | NavGroup
 const NAV_ENTRIES: NavEntry[] = [
   { type: 'item',  id: null,                label: 'Dashboard',           icon: 'icon-home'                  },
   { type: 'item',  id: 'component-library', label: 'Component Library',   icon: 'icon-rocket-launch-publish' },
-  { type: 'group', label: 'Assessments',    icon: 'icon-assignment',      children: [] },
-  { type: 'group', label: 'Client Portal',  icon: 'icon-briefcase-placement', children: [] },
   { type: 'group', label: 'Contacts',       icon: 'icon-account-multiple-people-contacts-enrolments-users', children: [] },
-  { type: 'group', label: 'Learning',       icon: 'icon-book-outline',    children: [] },
-  { type: 'group', label: 'Marking',        icon: 'icon-clipboard-check', children: [] },
-  { type: 'group', label: 'Settings',       icon: 'icon-settings1',       children: [] },
-  { type: 'group', label: 'Skills',         icon: 'icon-rule',            children: [] },
+  {
+    type: 'group', label: 'Workshops', icon: 'icon-workshop-blackboard',
+    children: [
+      { id: 'workshop-page',    label: 'Workshop Page'    },
+      { id: 'workshop-refresh', label: 'Workshop Refresh' },
+    ],
+  },
+  { type: 'group', label: 'Learning',       icon: 'icon-book-outline',        children: [] },
+  { type: 'group', label: 'Assessments',    icon: 'icon-assignment',           children: [] },
+  { type: 'group', label: 'Marking',        icon: 'icon-clipboard-check',      children: [] },
   {
     type: 'group', label: 'Work-based Learning', icon: 'icon-briefcase',
     children: [
@@ -39,13 +43,8 @@ const NAV_ENTRIES: NavEntry[] = [
       { id: 'unit-activity-view',    label: 'Unit Criteria Activity Requirements' },
     ],
   },
-  {
-    type: 'group', label: 'Workshops', icon: 'icon-workshop-blackboard',
-    children: [
-      { id: 'workshop-page',    label: 'Workshop Page'    },
-      { id: 'workshop-refresh', label: 'Workshop Refresh' },
-    ],
-  },
+  { type: 'group', label: 'Client Portal',  icon: 'icon-briefcase-placement',  children: [] },
+  { type: 'group', label: 'Settings',       icon: 'icon-settings1',            children: [] },
 ]
 
 const GROUP_IDS: Record<string, string> = {
