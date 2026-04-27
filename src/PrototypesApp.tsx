@@ -25,18 +25,29 @@ const NAV_ENTRIES: NavEntry[] = [
   { type: 'item',  id: null,                label: 'Dashboard',           icon: 'icon-home'                  },
   { type: 'item',  id: 'component-library', label: 'Component Library',   icon: 'icon-rocket-launch-publish' },
   {
-    type: 'group', label: 'Work-based Learning', icon: 'icon-activities-tasks-list',
+    type: 'group', label: 'Work-based Learning', icon: 'icon-briefcase',
     children: [
       { id: 'mobile-checklist-flow', label: 'Mobile Checklist Marking'           },
       { id: 'supervisor-checklist',  label: 'Checklist Marking'                  },
       { id: 'unit-activity-view',    label: 'Unit Criteria Activity Requirements' },
     ],
   },
-  { type: 'item',  id: 'workshop-page',     label: 'Workshop Page',       icon: 'icon-activities-tasks-list' },
-  { type: 'item',  id: 'workshop-refresh',  label: 'Workshop Refresh',    icon: 'icon-activities-tasks-list' },
+  {
+    type: 'group', label: 'Workshops', icon: 'icon-workshop',
+    children: [
+      { id: 'workshop-page',    label: 'Workshop Page'    },
+      { id: 'workshop-refresh', label: 'Workshop Refresh' },
+    ],
+  },
 ]
 
-const WBL_IDS = new Set(['mobile-checklist-flow', 'supervisor-checklist', 'unit-activity-view'])
+const GROUP_IDS: Record<string, string> = {
+  'mobile-checklist-flow': 'Work-based Learning',
+  'supervisor-checklist':  'Work-based Learning',
+  'unit-activity-view':    'Work-based Learning',
+  'workshop-page':         'Workshops',
+  'workshop-refresh':      'Workshops',
+}
 
 function getProtoFromHash(): string | null {
   const hash = window.location.hash.replace(/^#\/?/, '')
@@ -45,9 +56,12 @@ function getProtoFromHash(): string | null {
 
 export default function PrototypesApp() {
   const [activeProto, setActiveProto] = useState<string | null>(getProtoFromHash)
-  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(
-    () => new Set(WBL_IDS.has(getProtoFromHash() ?? '') ? ['Work-based Learning'] : ['Work-based Learning'])
-  )
+  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(() => {
+    const initial = getProtoFromHash()
+    const groups = new Set<string>(['Work-based Learning', 'Workshops'])
+    if (initial && GROUP_IDS[initial]) groups.add(GROUP_IDS[initial])
+    return groups
+  })
 
   function toggleGroup(label: string) {
     setExpandedGroups(prev => {
@@ -179,7 +193,7 @@ export default function PrototypesApp() {
                     <svg
                       width="16" height="16" viewBox="0 0 24 24" fill="none"
                       stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-                      style={{ flexShrink: 0, transition: 'transform 150ms', transform: expanded ? 'rotate(180deg)' : 'rotate(0deg)' }}
+                      style={{ flexShrink: 0, transition: 'transform 150ms', transform: expanded ? 'rotate(0deg)' : 'rotate(180deg)' }}
                     >
                       <path d="m6 9 6 6 6-6" />
                     </svg>
