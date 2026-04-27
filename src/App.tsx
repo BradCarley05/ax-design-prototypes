@@ -146,20 +146,22 @@ function useAsyncAutocomplete(fetcher: (q: string) => Promise<{ value: string; l
   return { options, loading, onQueryChange }
 }
 
-export default function App() {
+export default function App({ standalone = true }: { standalone?: boolean }) {
   const [switchOn, setSwitchOn] = useState(false)
   const [checked, setChecked] = useState(false)
   const [opt1, setOpt1] = useState(false)
   const [opt2, setOpt2] = useState(true)
   const [opt3, setOpt3] = useState(false)
-  const [activeNav, setActiveNav] = useState<string>(getNavFromHash)
-  const [activeTab, setActiveTab] = useState<'components' | 'prototypes'>(() => getTabFromNav(getNavFromHash()))
+  const [activeNav, setActiveNav] = useState<string>(() => standalone ? getNavFromHash() : 'buttons')
+  const [activeTab, setActiveTab] = useState<'components' | 'prototypes'>(() => getTabFromNav(standalone ? getNavFromHash() : 'buttons'))
 
   useEffect(() => {
+    if (!standalone) return
     window.location.hash = `/${activeNav}`
-  }, [activeNav])
+  }, [activeNav, standalone])
 
   useEffect(() => {
+    if (!standalone) return
     function onHashChange() {
       const nav = getNavFromHash()
       setActiveNav(nav)
@@ -167,7 +169,7 @@ export default function App() {
     }
     window.addEventListener('hashchange', onHashChange)
     return () => window.removeEventListener('hashchange', onHashChange)
-  }, [])
+  }, [standalone])
   const [pickerDate, setPickerDate] = useState<Date | undefined>()
   const [pickerDateRange, setPickerDateRange] = useState<DateRange | undefined>()
 

@@ -48,7 +48,7 @@ export default function PrototypesApp() {
 
   function renderPrototype() {
     switch (activeProto) {
-      case 'component-library':     return <App />
+      case 'component-library':     return <App standalone={false} />
       case 'mobile-checklist-flow': return <MobileChecklistFlow />
       case 'supervisor-checklist':  return <SupervisorChecklistPage />
       case 'unit-activity-view':    return <UnitActivityView />
