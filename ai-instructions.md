@@ -17,7 +17,13 @@ The following Unicode code point ranges must not be used:
 
 ### Icon whitelist
 Icons listed here are always allowed even if they fall within a blacklisted range.
-*(empty — will be built over time)*
+
+| Class | Code point | Used for |
+|---|---|---|
+| `icon-assignment` | `e9e8` | Assessments nav header |
+| `icon-clipboard-check` | `e9c3` | Marking nav header |
+| `icon-rule` | `e9d0` | Skills nav header |
+| `icon-settings1` | `e9d8` | Settings nav header |
 
 ---
 
