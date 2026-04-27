@@ -4,6 +4,7 @@ import { SupervisorChecklistPage } from './components/ui/supervisor-checklist'
 import { UnitActivityView } from './pages/UnitActivityView'
 import { WorkshopPage } from './components/ui/workshop-page'
 import { WorkshopRefreshPage } from './components/ui/workshop-refresh-page'
+import App from './App'
 import { TooltipProvider } from '@/components/ui/tooltip'
 
 // Figma asset URLs — expire ~7 days after last design fetch
@@ -18,6 +19,7 @@ const F_EMPTY_ILLUS       = 'https://www.figma.com/api/mcp/asset/c7b66254-3e10-4
 
 const PROTOTYPE_ITEMS = [
   { id: null,                     label: 'Dashboard',           icon: 'icon-home'                  },
+  { id: 'component-library',      label: 'Component Library',   icon: 'icon-rocket-launch-publish'  },
   { id: 'mobile-checklist-flow',  label: 'WBL Checklist Flow',  icon: 'icon-activities-tasks-list' },
   { id: 'supervisor-checklist',   label: 'Supervisor Checklist', icon: 'icon-checkbox-checked'     },
   { id: 'unit-activity-view',     label: 'Unit Activity View',   icon: 'icon-portrait-card-view'   },
@@ -46,6 +48,7 @@ export default function PrototypesApp() {
 
   function renderPrototype() {
     switch (activeProto) {
+      case 'component-library':     return <App />
       case 'mobile-checklist-flow': return <MobileChecklistFlow />
       case 'supervisor-checklist':  return <SupervisorChecklistPage />
       case 'unit-activity-view':    return <UnitActivityView />
