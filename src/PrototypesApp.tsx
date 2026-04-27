@@ -43,6 +43,7 @@ const NAV_ENTRIES: NavEntry[] = [
       { id: 'unit-activity-view',    label: 'Unit Criteria Activity Requirements' },
     ],
   },
+  { type: 'group', label: 'Skills',         icon: 'icon-rule',                 children: [] },
   { type: 'group', label: 'Client Portal',  icon: 'icon-briefcase-placement',  children: [] },
   { type: 'group', label: 'Settings',       icon: 'icon-settings1',            children: [] },
 ]
