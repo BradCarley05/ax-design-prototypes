@@ -8,6 +8,7 @@ interface StatusChipProps extends React.HTMLAttributes<HTMLSpanElement> {
   type?: StatusChipType
   size?: StatusChipSize
   icon?: boolean
+  iconClass?: string
   onPrimary?: boolean
 }
 
@@ -35,6 +36,7 @@ const StatusChip = React.forwardRef<HTMLSpanElement, StatusChipProps>(
       type = "base",
       size = "large",
       icon = false,
+      iconClass,
       onPrimary = false,
       className,
       children,
@@ -54,7 +56,7 @@ const StatusChip = React.forwardRef<HTMLSpanElement, StatusChipProps>(
       {...props}
     >
       {icon && (
-        <i className={`ax-icon ${TYPE_ICONS[type]} ax-status-chip-icon`} aria-hidden="true" />
+        <i className={`ax-icon ${iconClass ?? TYPE_ICONS[type]} ax-status-chip-icon`} aria-hidden="true" />
       )}
       <span>{children ?? TYPE_LABELS[type]}</span>
     </span>

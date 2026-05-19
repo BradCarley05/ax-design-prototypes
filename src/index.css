@@ -1,6 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,100..1000&display=swap');
-@import url('https://cdn.axcelerate.com.au/iconfont/ax-icon/style.css?v=1.62');
 @import './design-tokens.css';
+@import '../node_modules/ax-arc-prototyping/dist/style.css';
+@import url('https://cdn.axcelerate.com.au/iconfont/ax-icon/style.css?v=1.62');
 @import './components/ui/components.css';
 
 /* ─── Full CSS Reset ──────────────────────────────────────────────────────── */

@@ -4,8 +4,11 @@ import { SupervisorChecklistPage } from './components/ui/supervisor-checklist'
 import { UnitActivityView } from './pages/UnitActivityView'
 import { WorkshopPage } from './components/ui/workshop-page'
 import { WorkshopRefreshPage } from './components/ui/workshop-refresh-page'
+import { MilestonesConfigPage } from './components/ui/milestones-config'
+import { WBLPublishingVersions } from './components/ui/wbl-publishing-versions'
 import App from './App'
 import { TooltipProvider } from '@/components/ui/tooltip'
+import { ToastProvider } from 'ax-arc-prototyping'
 
 import welcomeIllustration from './assets/welcome-illustration.svg'
 import axLogo from './assets/ax-logo.svg'
@@ -34,6 +37,8 @@ const NAV_ENTRIES: NavEntry[] = [
       { id: 'mobile-checklist-flow', label: 'Mobile Checklist Marking'           },
       { id: 'supervisor-checklist',  label: 'Checklist Marking'                  },
       { id: 'unit-activity-view',    label: 'Unit Criteria Activity Requirements' },
+      { id: 'milestones-config',     label: 'Milestones Configuration'           },
+      { id: 'wbl-publishing-versions', label: 'Publishing Versions'              },
     ],
   },
   { type: 'group', label: 'Skills',         icon: 'icon-rule',                 children: [] },
@@ -45,6 +50,8 @@ const GROUP_IDS: Record<string, string> = {
   'mobile-checklist-flow': 'Work-based Learning',
   'supervisor-checklist':  'Work-based Learning',
   'unit-activity-view':    'Work-based Learning',
+  'milestones-config':         'Work-based Learning',
+  'wbl-publishing-versions':   'Work-based Learning',
   'workshop-page':         'Workshops',
   'workshop-refresh':      'Workshops',
 }
@@ -92,11 +99,14 @@ export default function PrototypesApp() {
       case 'unit-activity-view':    return <UnitActivityView />
       case 'workshop-page':         return <WorkshopPage />
       case 'workshop-refresh':      return <WorkshopRefreshPage />
+      case 'milestones-config':         return <MilestonesConfigPage />
+      case 'wbl-publishing-versions':   return <WBLPublishingVersions />
       default:                      return null
     }
   }
 
   return (
+    <ToastProvider>
     <TooltipProvider>
       <div style={{ display: 'flex', height: '100vh', width: '100vw', backgroundColor: 'white', overflow: 'hidden' }}>
 
@@ -257,5 +267,6 @@ export default function PrototypesApp() {
 
       </div>
     </TooltipProvider>
+    </ToastProvider>
   )
 }
