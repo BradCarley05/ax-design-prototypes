@@ -5,7 +5,6 @@ import { Avatar } from '@/components/ui/avatar'
 import { Tooltip } from '@/components/ui/tooltip'
 import { StatusChip } from '@/components/ui/status-chip'
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem, SelectLabel, SelectSeparator } from '@/components/ui/select'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -286,73 +285,6 @@ function PublishModal({ version, onCancel, onPublish }: PublishModalProps) {
   )
 }
 
-// ─── Create Version Modal ─────────────────────────────────────────────────────
-
-interface CreateVersionModalProps {
-  currentVersion: string
-  onCancel: () => void
-  onCreate: (newVersion: string, duplicateCurrent: boolean) => void
-}
-
-function CreateVersionModal({ currentVersion, onCancel, onCreate }: CreateVersionModalProps) {
-  const initial = (Math.round((parseFloat(currentVersion) + 0.1) * 10) / 10).toFixed(1)
-  const [newVersion, setNewVersion] = useState(initial)
-  const [option, setOption] = useState<'duplicate' | 'empty'>('duplicate')
-
-  function increment() {
-    setNewVersion(v => (Math.round((parseFloat(v) + 0.1) * 10) / 10).toFixed(1))
-  }
-
-  function decrement() {
-    setNewVersion(v => {
-      const next = Math.round((parseFloat(v) - 0.1) * 10) / 10
-      return next > 0 ? next.toFixed(1) : v
-    })
-  }
-
-  return (
-    <div className="ms-modal-overlay">
-      <div className="ms-modal">
-        <div className="ms-modal-header">
-          <span className="ms-modal-title">Create New Version</span>
-          <IconButton icon="icon-x-thick" buttonStyle={false} size={20} onClick={onCancel} />
-        </div>
-        <div className="ms-modal-body">
-          <div className="ms-modal-info">
-            <i className="icon-info-outline ms-modal-info-icon" />
-            <div className="ms-modal-info-content">
-              <span className="ms-modal-info-title">Learners who have already commenced their placement milestones will not be transitioned to the latest version</span>
-              <p className="ms-modal-info-text">To update a learner to the latest version of this milestone configuration, a new placement must be created for them.</p>
-            </div>
-          </div>
-          <div className="ms-modal-field">
-            <label className="ms-modal-label">New Version Number</label>
-            <div className="ms-version-stepper">
-              <button className="ms-version-stepper-btn" onClick={decrement}>−</button>
-              <span className="ms-version-stepper-value">{newVersion}</span>
-              <button className="ms-version-stepper-btn" onClick={increment}>+</button>
-            </div>
-          </div>
-          <RadioGroup value={option} onValueChange={v => setOption(v as 'duplicate' | 'empty')} className="ms-radio-stack">
-            <div className={`ms-radio-stack-item ${option === 'duplicate' ? 'ms-radio-stack-item--selected' : ''}`} onClick={() => setOption('duplicate')}>
-              <RadioGroupItem value="duplicate" id="opt-duplicate" />
-              <label htmlFor="opt-duplicate" className="ms-radio-stack-label">Duplicate current configuration</label>
-            </div>
-            <div className={`ms-radio-stack-item ${option === 'empty' ? 'ms-radio-stack-item--selected' : ''}`} onClick={() => setOption('empty')}>
-              <RadioGroupItem value="empty" id="opt-empty" />
-              <label htmlFor="opt-empty" className="ms-radio-stack-label">Start with empty configuration</label>
-            </div>
-          </RadioGroup>
-        </div>
-        <div className="ms-modal-footer">
-          <Button variant="outline" onClick={onCancel}>Cancel</Button>
-          <Button variant="default" onClick={() => onCreate(newVersion, option === 'duplicate')}>Create</Button>
-        </div>
-      </div>
-    </div>
-  )
-}
-
 // ─── Main component ───────────────────────────────────────────────────────────
 
 export function MilestonesConfigPage() {
@@ -361,6 +293,7 @@ export function MilestonesConfigPage() {
   const [activeUnitIds, setActiveUnitIds] = useState<Record<string, string | null>>({})
   const [activeTab, setActiveTab]         = useState<'milestones' | 'units'>('milestones')
   const [versionStatus, setVersionStatus] = useState<'draft' | 'published'>('draft')
+  const [currentVersion] = useState('1.0')
   const [showPublishModal, setShowPublishModal] = useState(false)
 
   const isEmpty   = milestones.length === 0
@@ -467,8 +400,10 @@ export function MilestonesConfigPage() {
             <div className="ms-panel-body">
               <VersionHeader
                 status={versionStatus}
+                version={currentVersion}
+                versionHistory={[]}
                 onPublish={() => setShowPublishModal(true)}
-                onNewVersion={() => setVersionStatus('draft')}
+                onCreateVersion={() => setVersionStatus('draft')}
               />
               {milestones.map((ms, idx) => (
                 <StepCard
@@ -551,6 +486,7 @@ export function MilestonesConfigPage() {
 
       {showPublishModal && (
         <PublishModal
+          version={currentVersion}
           onCancel={() => setShowPublishModal(false)}
           onPublish={() => {
             setVersionStatus('published')
