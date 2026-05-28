@@ -12,9 +12,9 @@ export default defineConfig({
     chunkSizeWarningLimit: 1500,
   },
   resolve: {
+    dedupe: ['react', 'react-dom', 'react/jsx-runtime'],
     alias: {
       '@': path.resolve(__dirname, './src'),
-      'ax-arc-prototyping/styles': path.resolve(__dirname, 'node_modules/ax-arc-prototyping/dist/ax-arc-prototyping.css'),
     },
   },
 })
