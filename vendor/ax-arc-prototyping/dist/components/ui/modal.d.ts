@@ -13,11 +13,13 @@ interface ModalProps {
     /** Optional tertiary text-link action. */
     tertiaryLabel?: string;
     onTertiary?: () => void;
-    /** Modal width in px. Defaults to 420. */
+    /** Modal width in px. Defaults to 420, or 960 when variant is 'table'. */
     width?: number;
+    /** 'table' removes content padding and lets the Table component manage its own scroll. */
+    variant?: 'table';
     className?: string;
 }
-declare function Modal({ open, onClose, title, children, primaryLabel, onPrimary, secondaryLabel, onSecondary, tertiaryLabel, onTertiary, width, className, }: ModalProps): React.ReactPortal | null;
+declare function Modal({ open, onClose, title, children, primaryLabel, onPrimary, secondaryLabel, onSecondary, tertiaryLabel, onTertiary, width, variant, className, }: ModalProps): React.ReactPortal | null;
 declare namespace Modal {
     var displayName: string;
 }

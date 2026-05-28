@@ -13,12 +13,16 @@ export interface CommandBarProps {
     onEmptyBackspace?: () => void;
     /** Called when Enter is pressed in ai mode with no selectable items (i.e. to submit the query) */
     onAiSubmit?: (query: string) => void;
+    /** Called when Cmd/Ctrl+Enter is pressed in search mode */
+    onSearchSubmit?: (query: string) => void;
+    /** Hint shown on the right of the search input (e.g. keyboard shortcut) */
+    searchHint?: React.ReactNode;
     /** Shows a left-aligned loading spinner in place of content */
     loading?: boolean;
     className?: string;
     inputRef?: React.RefObject<HTMLInputElement | null>;
 }
-export declare function CommandBar({ query, onQueryChange, placeholder, children, aiLabel, onAiClick, mode, onEmptyBackspace, onAiSubmit, loading, className, inputRef, }: CommandBarProps): import("react/jsx-runtime").JSX.Element;
+export declare function CommandBar({ query, onQueryChange, placeholder, children, aiLabel, onAiClick, mode, onEmptyBackspace, onAiSubmit, onSearchSubmit, searchHint, loading, className, inputRef, }: CommandBarProps): import("react/jsx-runtime").JSX.Element;
 export interface CommandBarSectionProps {
     heading: string;
     children?: React.ReactNode;

@@ -77,9 +77,11 @@ interface FilterBarProps {
     onMoreActions?: () => void;
     /** Extra slot for left-side buttons (e.g. Views, Columns) */
     extraButtons?: React.ReactNode;
+    /** Extra buttons rendered in the actions area alongside "Add filter" */
+    actionsExtra?: React.ReactNode;
     className?: string;
 }
-declare function FilterBar({ filters, onRemoveFilter, onChangeFilter, fieldValueOptions, fieldDefinitions, advancedFilters, onAddAdvancedFilter, onRemoveAdvancedFilter, onChangeAdvancedFilter, sort, onToggleSort, toggleOptions, toggleValue, onToggleChange, onAddFilter, onMoreActions, extraButtons, className, }: FilterBarProps): import("react/jsx-runtime").JSX.Element;
+declare function FilterBar({ filters, onRemoveFilter, onChangeFilter, fieldValueOptions, fieldDefinitions, advancedFilters, onAddAdvancedFilter, onRemoveAdvancedFilter, onChangeAdvancedFilter, sort, onToggleSort, toggleOptions, toggleValue, onToggleChange, onAddFilter, onMoreActions, extraButtons, actionsExtra, className, }: FilterBarProps): import("react/jsx-runtime").JSX.Element;
 declare namespace FilterBar {
     var displayName: string;
 }

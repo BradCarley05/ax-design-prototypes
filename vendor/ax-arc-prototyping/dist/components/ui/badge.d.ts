@@ -1,7 +1,11 @@
 import * as React from "react";
-type BadgeVariant = "default" | "secondary" | "destructive" | "positive" | "warning" | "info" | "pill" | "outline";
-export interface BadgeProps extends React.HTMLAttributes<HTMLDivElement> {
-    variant?: BadgeVariant;
+export type BadgeStatus = "none" | "positive" | "negative" | "interim" | "base" | "neutral";
+export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
+    status?: BadgeStatus;
+    active?: boolean;
+    indicator?: boolean;
+    iconOnly?: boolean;
+    children?: React.ReactNode;
 }
-declare function Badge({ className, variant, ...props }: BadgeProps): import("react/jsx-runtime").JSX.Element;
+declare function Badge({ className, status, active, indicator, iconOnly, children, ...props }: BadgeProps): import("react/jsx-runtime").JSX.Element;
 export { Badge };

@@ -1,4 +1,4 @@
-import { ColumnDef, RowData } from '@tanstack/react-table';
+import { ColumnDef, SortingState, RowData } from '@tanstack/react-table';
 interface TableProps<TData extends RowData> {
     data: TData[];
     columns: ColumnDef<TData, any>[];
@@ -9,7 +9,9 @@ interface TableProps<TData extends RowData> {
     onSelectionChange?: (rows: TData[]) => void;
     stickyHeader?: boolean;
     stickyOffset?: number;
+    initialSorting?: SortingState;
+    onSortingChange?: (sorting: SortingState) => void;
 }
-declare function Table<TData extends RowData>({ data, columns, pageSize, pageSizeOptions, className, selectable, onSelectionChange, stickyHeader, stickyOffset }: TableProps<TData>): import("react/jsx-runtime").JSX.Element;
+declare function Table<TData extends RowData>({ data, columns, pageSize, pageSizeOptions, className, selectable, onSelectionChange, stickyHeader, stickyOffset, initialSorting, onSortingChange }: TableProps<TData>): import("react/jsx-runtime").JSX.Element;
 export { Table };
 export type { TableProps, ColumnDef };

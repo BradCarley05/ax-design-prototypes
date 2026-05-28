@@ -25,9 +25,11 @@ export interface TableHeaderProps extends Omit<TopBarProps, 'className'> {
     toggleValue?: string;
     onToggleChange?: (value: string) => void;
     onMoreActions?: () => void;
+    extraButtons?: React.ReactNode;
+    actionsExtra?: React.ReactNode;
     className?: string;
 }
-declare function TableHeader({ children, filters, fieldValueOptions, onAddFilter, onRemoveFilter, onChangeFilter, fieldDefinitions, advancedFilters, onAddAdvancedFilter, onRemoveAdvancedFilter, onChangeAdvancedFilter, sort, onToggleSort, toggleOptions, toggleValue, onToggleChange, onMoreActions, className, ...topBarProps }: TableHeaderProps): import("react/jsx-runtime").JSX.Element;
+declare function TableHeader({ children, filters, fieldValueOptions, onAddFilter, onRemoveFilter, onChangeFilter, fieldDefinitions, advancedFilters, onAddAdvancedFilter, onRemoveAdvancedFilter, onChangeAdvancedFilter, sort, onToggleSort, toggleOptions, toggleValue, onToggleChange, onMoreActions, extraButtons, actionsExtra, className, ...topBarProps }: TableHeaderProps): import("react/jsx-runtime").JSX.Element;
 declare namespace TableHeader {
     var displayName: string;
 }

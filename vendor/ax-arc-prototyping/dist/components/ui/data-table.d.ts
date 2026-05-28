@@ -1,8 +1,26 @@
-import { RowData } from '@tanstack/react-table';
+import { RowData, SortingState } from '@tanstack/react-table';
 import { ColumnDef } from './table';
 import { ActiveFilter, ToggleOption, FieldDefinition, AdvancedFilterRecord, AdvancedFilterValue } from './filter-bar';
 import { BreadcrumbItem } from './breadcrumb';
 import * as React from 'react';
+interface DataTableConfig {
+    filters: ActiveFilter[];
+    advancedFilters: AdvancedFilterRecord[];
+    sort: {
+        field: string;
+        direction?: 'asc' | 'desc';
+    } | undefined;
+    toggleValue: string | undefined;
+    search: string;
+    pageSize: number;
+    columnSorting: SortingState;
+    columnOrder: string[];
+    columnVisibility: Record<string, boolean>;
+}
+declare function useTableConfig(storageKey: string): {
+    defaultConfig: DataTableConfig | undefined;
+    onConfigChange: (config: DataTableConfig) => void;
+};
 interface DataTableProps<TData extends RowData> {
     breadcrumbs?: BreadcrumbItem[];
     leftContent?: React.ReactNode;
@@ -40,6 +58,14 @@ interface DataTableProps<TData extends RowData> {
     pageSizeOptions?: number[];
     selectable?: boolean;
     onSelectionChange?: (rows: TData[]) => void;
+    /** Seed config for the first render — use with `useTableConfig` or supply your own. Parent is responsible for restoring filter/sort/toggle state from this. DataTable uses it to restore the internal search value. Updating this after mount (e.g. when loading a saved view) resets internal search and column sorting. */
+    defaultConfig?: DataTableConfig;
+    /** Called whenever the assembled table config changes. Persist it (e.g. via `useTableConfig`) or handle it yourself. */
+    onConfigChange?: (config: DataTableConfig) => void;
+    /** Extra buttons rendered in the filter bar's left slot — use for ViewsButton, column pickers, etc. */
+    extraButtons?: React.ReactNode;
+    /** Extra buttons rendered in the filter bar's actions area alongside "Add filter" */
+    actionsExtra?: React.ReactNode;
     className?: string;
 }
 interface DataTableSearchProps {
@@ -51,9 +77,9 @@ declare function DataTableSearch({ value, onChange, placeholder }: DataTableSear
 declare namespace DataTableSearch {
     var displayName: string;
 }
-declare function DataTable<TData extends RowData>({ breadcrumbs, leftContent, headingTitle, avatar, title, subline, extraString, rightContent, maxWidth, search, toolbar, filters, fieldValueOptions, onAddFilter, onRemoveFilter, onChangeFilter, fieldDefinitions, advancedFilters, onAddAdvancedFilter, onRemoveAdvancedFilter, onChangeAdvancedFilter, sort, onToggleSort, toggleOptions, toggleValue, onToggleChange, onMoreActions, data, columns, pageSize, pageSizeOptions, selectable, onSelectionChange, className, }: DataTableProps<TData>): import("react/jsx-runtime").JSX.Element;
+declare function DataTable<TData extends RowData>({ breadcrumbs, leftContent, headingTitle, avatar, title, subline, extraString, rightContent, maxWidth, search, toolbar, filters, fieldValueOptions, onAddFilter, onRemoveFilter, onChangeFilter, fieldDefinitions, advancedFilters, onAddAdvancedFilter, onRemoveAdvancedFilter, onChangeAdvancedFilter, sort, onToggleSort, toggleOptions, toggleValue, onToggleChange, onMoreActions, data, columns, pageSize, pageSizeOptions, selectable, onSelectionChange, defaultConfig, onConfigChange, extraButtons, actionsExtra, className, }: DataTableProps<TData>): import("react/jsx-runtime").JSX.Element;
 declare namespace DataTable {
     var displayName: string;
 }
-export { DataTable, DataTableSearch };
-export type { DataTableProps, DataTableSearchProps };
+export { DataTable, DataTableSearch, useTableConfig };
+export type { DataTableProps, DataTableSearchProps, DataTableConfig };
