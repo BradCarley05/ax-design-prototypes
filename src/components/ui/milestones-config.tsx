@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { TopBar } from 'ax-arc-prototyping'
 import { Button, IconButton } from '@/components/ui/button'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -75,6 +75,84 @@ const SEED_MILESTONES: Milestone[] = [
     ],
   },
 ]
+
+interface QualUnit {
+  id: string
+  name: string
+  subline: string
+}
+
+const SEED_QUAL_UNITS: QualUnit[] = [
+  { id: 'qu1',  name: 'General Activities',                    subline: 'Non-Unit Related Activities'               },
+  { id: 'qu2',  name: 'SITHCCC023',                            subline: 'Use food preparation equipment'            },
+  { id: 'qu3',  name: 'SITHCCC028',                            subline: 'Prepare dishes using basic methods of cookery' },
+  { id: 'qu4',  name: 'SITHCCC029',                            subline: 'Prepare stocks, sauces and soups'          },
+  { id: 'qu5',  name: 'SITHCCC030',                            subline: 'Prepare vegetable, fruit, egg and farinaceous dishes' },
+  { id: 'qu6',  name: 'SITHCCC031',                            subline: 'Prepare poultry dishes'                    },
+  { id: 'qu7',  name: 'SITHCCC035',                            subline: 'Prepare meat dishes'                       },
+  { id: 'qu8',  name: 'SITHCCC036',                            subline: 'Prepare seafood dishes'                    },
+  { id: 'qu9',  name: 'SITHCCC040',                            subline: 'Prepare and serve cheese'                  },
+  { id: 'qu10', name: 'SITHPAT016',                            subline: 'Produce desserts'                          },
+  { id: 'qu11', name: 'SITXFSA005',                            subline: 'Use hygienic practices for food safety'    },
+  { id: 'qu12', name: 'SITXFSA006',                            subline: 'Participate in safe food handling practices' },
+]
+
+function UnitsTab({ units }: { units: QualUnit[] }) {
+  const [search, setSearch] = useState('')
+
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase()
+    if (!q) return units
+    return units.filter(u =>
+      u.name.toLowerCase().includes(q) || u.subline.toLowerCase().includes(q)
+    )
+  }, [units, search])
+
+  return (
+    <div className="ms-units-tab">
+      <div className="ms-units-controls">
+        <div className="ms-units-search">
+          <i className="icon-contact-user-search-people ms-units-search-icon" aria-hidden="true" />
+          <input
+            className="ms-units-search-input"
+            placeholder="Search"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+          />
+        </div>
+      </div>
+
+      <div className="ms-units-table-wrap">
+        <div className="ms-units-table-header">
+          <span className="ms-units-col-label">Unit</span>
+        </div>
+
+        {filtered.length === 0 ? (
+          <div className="ms-units-empty">
+            <i className="icon-contact-user-search-people ms-units-empty-icon" aria-hidden="true" />
+            <p className="ms-units-empty-title">We couldn't find any results</p>
+            <p className="ms-units-empty-sub">Try removing or adjusting filters or search criteria</p>
+          </div>
+        ) : (
+          filtered.map(unit => (
+            <div key={unit.id} className="ms-units-row">
+              <div className="ms-units-cell">
+                <span className="ms-units-name">{unit.name}</span>
+                <span className="ms-units-subline">{unit.subline}</span>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+
+      {filtered.length > 0 && (
+        <div className="ms-units-footer">
+          <span className="ms-units-count">1–{filtered.length} of {filtered.length}</span>
+        </div>
+      )}
+    </div>
+  )
+}
 
 const ILLUS_BG = 'https://www.figma.com/api/mcp/asset/9f8df2a7-3791-4061-a185-0200a7bea328'
 const ILLUS_FG = 'https://www.figma.com/api/mcp/asset/77a3cb7b-1446-4b56-af53-21aec6c01bf1'
@@ -354,7 +432,9 @@ export function MilestonesConfigPage() {
       </div>
 
       {/* ── Content ──────────────────────────────────────────────────────── */}
-      {isEmpty ? (
+      {activeTab === 'units' ? (
+        <UnitsTab units={SEED_QUAL_UNITS} />
+      ) : isEmpty ? (
 
         /* Empty state */
         <div className="ms-empty">
