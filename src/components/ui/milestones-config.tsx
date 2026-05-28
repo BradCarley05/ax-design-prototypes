@@ -1,10 +1,11 @@
 import { useState } from 'react'
+import { TopBar } from 'ax-arc-prototyping'
 import { Button, IconButton } from '@/components/ui/button'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Avatar } from '@/components/ui/avatar'
 import { Tooltip } from '@/components/ui/tooltip'
 import { StatusChip } from '@/components/ui/status-chip'
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem, SelectLabel, SelectSeparator } from '@/components/ui/select'
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -187,55 +188,6 @@ function UnitCardItem({ unit, expanded }: UnitCardItemProps) {
   )
 }
 
-// ─── Version Header ───────────────────────────────────────────────────────────
-
-interface VersionHeaderProps {
-  status: 'draft' | 'published'
-  version: string
-  versionHistory: string[]
-  onPublish: () => void
-  onCreateVersion: () => void
-}
-
-function VersionHeader({ status, version, versionHistory, onPublish, onCreateVersion }: VersionHeaderProps) {
-  return (
-    <div className="ms-version-header">
-      <div className="ms-version-title-row">
-        <span className="ms-version-title">Milestone configuration</span>
-        <StatusChip type={status === 'draft' ? 'base' : 'submitted'} size="small" icon>
-          {status === 'draft' ? 'Draft' : 'Published'}
-        </StatusChip>
-      </div>
-      <Select value={version}>
-        <SelectTrigger leftIcon={<i className="icon-linking-type" />}>
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          {versionHistory.length > 0 && (
-            <>
-              <SelectLabel><i className="icon-history" /> Version History</SelectLabel>
-              <SelectSeparator />
-              {versionHistory.map(v => (
-                <SelectItem key={v} value={v}>Version: {v}</SelectItem>
-              ))}
-              <SelectSeparator />
-            </>
-          )}
-          <SelectItem value={version}>Version: {version}</SelectItem>
-        </SelectContent>
-      </Select>
-      {status === 'draft' ? (
-        <Button variant="outline" leftIcon={<i className="ax-icon icon-rocket-launch-publish" />} onClick={onPublish} className="ms-version-publish-btn">
-          Publish v{version}
-        </Button>
-      ) : (
-        <Button variant="outline" leftIcon={<i className="ax-icon icon-add" />} onClick={onCreateVersion} className="ms-version-publish-btn">
-          Create New Version
-        </Button>
-      )}
-    </div>
-  )
-}
 
 // ─── Publish Modal ────────────────────────────────────────────────────────────
 
@@ -332,29 +284,73 @@ export function MilestonesConfigPage() {
 
   const activeUnitId = selected ? (activeUnitIds[selected.id] ?? selected.activeUnitId) : null
 
+  const versionSelect = (
+    <Select value={`v${currentVersion}`}>
+      <SelectTrigger leftIcon={<i className="icon-linking-type" aria-hidden="true" />}>
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value={`v${currentVersion}`}>v{currentVersion}</SelectItem>
+      </SelectContent>
+    </Select>
+  )
+
+  const rightContent = (
+    <div className="wbl-topbar-right">
+      {versionStatus === 'draft' ? (
+        <StatusChip type="base" icon>Draft</StatusChip>
+      ) : (
+        <StatusChip type="submitted" icon className="wbl-chip--published">Published</StatusChip>
+      )}
+      {versionSelect}
+      {versionStatus === 'draft' ? (
+        <Button
+          variant="outline"
+          leftIcon={<i className="icon-rocket-launch-publish" aria-hidden="true" />}
+          onClick={() => setShowPublishModal(true)}
+        >
+          Publish v{currentVersion}
+        </Button>
+      ) : (
+        <Button
+          variant="outline"
+          leftIcon={<i className="icon-add" aria-hidden="true" />}
+          onClick={() => setVersionStatus('draft')}
+        >
+          New Criteria Version
+        </Button>
+      )}
+    </div>
+  )
+
   return (
     <div className="ms-page">
 
       {/* ── Top Bar ─────────────────────────────────────────────────────── */}
-      <div className="ms-topbar">
-        <div className="ms-topbar-row">
-          <div className="ms-topbar-left">
-            <IconButton icon="icon-arrow-right-short" buttonStyle={false} size={24} className="ms-back-btn" />
-            <div className="ms-course-avatar">
-              <i className="icon-book-outline" />
+      <div className="wbl-topbar-wrap">
+        <TopBar
+          leftContent={
+            <button className="icon-btn icon-btn--base" aria-label="Back">
+              <i className="icon-arrow-left" aria-hidden="true" />
+            </button>
+          }
+          avatar={
+            <div className="wbl-topbar-avatar">
+              <i className="icon-book-outline" aria-hidden="true" />
             </div>
-            <div className="ms-course-info">
-              <span className="ms-course-title">Certificate III in Commercial Cookery</span>
-              <span className="ms-course-code">SIT30816</span>
-            </div>
-          </div>
+          }
+          title="Certificate III in Commercial Cookery"
+          subline="SIT30816"
+          rightContent={rightContent}
+        />
+        <div className="wbl-tabs-row">
+          <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'milestones' | 'units')}>
+            <TabsList>
+              <TabsTrigger value="milestones">Milestones</TabsTrigger>
+              <TabsTrigger value="units">Units</TabsTrigger>
+            </TabsList>
+          </Tabs>
         </div>
-        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'milestones' | 'units')}>
-          <TabsList>
-            <TabsTrigger value="milestones">Milestones</TabsTrigger>
-            <TabsTrigger value="units">Units</TabsTrigger>
-          </TabsList>
-        </Tabs>
       </div>
 
       {/* ── Content ──────────────────────────────────────────────────────── */}
@@ -398,13 +394,6 @@ export function MilestonesConfigPage() {
           {/* Left panel */}
           <div className="ms-panel">
             <div className="ms-panel-body">
-              <VersionHeader
-                status={versionStatus}
-                version={currentVersion}
-                versionHistory={[]}
-                onPublish={() => setShowPublishModal(true)}
-                onCreateVersion={() => setVersionStatus('draft')}
-              />
               {milestones.map((ms, idx) => (
                 <StepCard
                   key={ms.id}
