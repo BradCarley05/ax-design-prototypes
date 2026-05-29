@@ -1,3 +1,9 @@
+/* ─── ax-arc-prototyping overrides ───────────────────────────────────────── */
+
+.ax-info-block-body {
+  white-space: pre-line;
+}
+
 /* ─── Button ─────────────────────────────────────────────────────────────── */
 
 .ax-btn {
@@ -3134,17 +3140,22 @@
 .ms-panel-body .ax-btn { flex-shrink: 0; }
 
 /* Step card */
-.ms-step-card {
-  border-radius: var(--radius-button);
+.ms-step-card.ax-card {
+  padding: 0;
   box-shadow: var(--shadow-el2);
-  background-color: var(--bg-content);
+  border-radius: var(--radius-button);
   overflow: hidden;
+}
+
+.ms-step-card--collapsed.ax-card {
   cursor: pointer;
 }
 
+.ms-step-card-header--active {
+  background-color: var(--primary-200);
+}
+
 .ms-step-card-header {
-  display: flex;
-  align-items: center;
   gap: var(--space-125);
   padding: var(--space-200);
   border-bottom: 1px solid var(--border-medium);
@@ -3165,32 +3176,6 @@
   font-weight: var(--font-weight-semi-bold);
   color: var(--text-primary);
   line-height: 1;
-  font-family: var(--font-family);
-}
-
-.ms-step-info {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.ms-step-name {
-  font-size: var(--font-size-small);
-  font-weight: var(--font-weight-medium);
-  color: var(--text);
-  line-height: var(--line-height-small);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-family: var(--font-family);
-}
-
-.ms-step-units-count {
-  font-size: var(--font-size-xsmall);
-  color: var(--text-light);
-  line-height: var(--line-height-xsmall);
   font-family: var(--font-family);
 }
 
@@ -3249,28 +3234,7 @@
 
 /* Context header (row above milestone card) */
 .ms-context-header {
-  display: flex;
-  align-items: center;
-  gap: var(--space-150);
   height: 60px;
-}
-
-.ms-context-num {
-  width: 36px;
-  height: 36px;
-  flex-shrink: 0;
-}
-.ms-context-num .ax-avatar-initials {
-  color: var(--text-primary);
-  font-family: var(--font-family);
-}
-
-.ms-context-info {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  flex: 1;
-  min-width: 0;
 }
 
 .ms-context-actions {
@@ -3280,36 +3244,14 @@
   flex-shrink: 0;
 }
 
-.ms-context-title {
-  font-size: var(--font-size-base);
-  font-weight: var(--font-weight-medium);
-  color: var(--text);
-  line-height: 18px;
-  font-family: var(--font-family);
-}
-
-.ms-context-sub {
-  font-size: var(--font-size-small);
-  color: var(--text-light);
-  line-height: 16px;
-  font-family: var(--font-family);
-}
-
 /* Milestone card (right panel main card) */
-.ms-milestone-card {
-  background-color: var(--bg-content);
-  border-radius: var(--radius-card);
-  box-shadow: var(--shadow-el3);
+.ms-milestone-card.ax-card {
   overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-250);
-  padding: var(--space-250);
 }
 
 /* Unit card within milestone card */
-.ms-unit-card {
-  border-radius: var(--radius-card);
+.ms-unit-card.ax-card {
+  padding: 0;
   box-shadow: var(--shadow-button);
   overflow: hidden;
 }
@@ -3326,6 +3268,9 @@
 }
 .ms-unit-card-header:hover { background-color: var(--bg-secondary-hover); }
 .ms-unit-card--expanded .ms-unit-card-header { border-bottom: 1px solid var(--border-medium); }
+
+.ms-unit-remove-btn { opacity: 0; transition: opacity 0.1s; }
+.ms-unit-card:hover .ms-unit-remove-btn { opacity: 1; }
 
 .ms-unit-card-header-text {
   flex: 1;
@@ -3394,57 +3339,9 @@
 }
 
 .ms-unit-item {
-  display: flex;
-  align-items: center;
-  gap: var(--space-100);
   padding: var(--space-125);
 }
 .ms-unit-item + .ms-unit-item { border-top: 1px solid var(--border-medium); }
-
-.ms-unit-item-avatar {
-  width: 28px;
-  height: 28px;
-  border-radius: var(--radius-element);
-  background-color: var(--primary-200);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  color: var(--text-primary);
-  overflow: hidden;
-}
-.ms-unit-item-avatar i { font-size: 15px; line-height: 1; font-style: normal; }
-
-.ms-unit-item-text {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  gap: var(--space-100);
-  min-width: 0;
-}
-
-.ms-unit-item-title {
-  font-size: var(--font-size-small);
-  font-weight: var(--font-weight-medium);
-  color: var(--text);
-  line-height: 16px;
-  white-space: nowrap;
-  font-family: var(--font-family);
-}
-
-.ms-unit-item-meta {
-  font-size: var(--font-size-xsmall);
-  color: var(--text-light);
-  line-height: 14px;
-  white-space: nowrap;
-  font-family: var(--font-family);
-}
-
-/* Add unit row */
-.ms-add-unit-row {
-  display: flex;
-  align-items: center;
-}
 
 /* Version header card */
 .ms-version-header {
@@ -3481,99 +3378,20 @@
 .ms-tooltip-wrap { display: flex; }
 .ms-tooltip-wrap .ax-btn { flex: 1; }
 
-/* Publish modal */
-.ms-modal-overlay {
-  position: fixed;
-  inset: 0;
-  background-color: rgba(32, 55, 75, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.ms-modal {
-  background-color: var(--bg-content);
-  border-radius: var(--radius-widget);
-  box-shadow: var(--shadow-el10);
-  width: 590px;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.ms-modal-header {
-  display: flex;
-  align-items: center;
-  padding: var(--space-250) var(--space-300);
-  border-bottom: 1px solid var(--border-medium);
-  gap: var(--space-150);
-}
-
-.ms-modal-title {
-  flex: 1;
-  font-size: var(--font-size-xlarge);
-  font-weight: var(--font-weight-medium);
-  color: var(--text);
-  font-family: var(--font-family);
-  line-height: var(--line-height-large);
-}
-
-.ms-modal-body {
-  padding: var(--space-300);
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-250);
-}
-
-.ms-modal-info {
-  display: flex;
-  gap: var(--space-150);
-  padding: var(--space-200);
-  background-color: var(--info-200);
-  border-left: 2px solid var(--info-500);
-  border-radius: var(--radius-element);
-}
-
-.ms-modal-info-icon {
-  font-size: 18px;
-  line-height: 1;
-  font-style: normal;
-  color: var(--info-700);
-  flex-shrink: 0;
-  margin-top: 2px;
-}
-
-.ms-modal-info-content {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-075);
-}
-
-.ms-modal-info-title {
-  font-size: var(--font-size-small);
-  font-weight: var(--font-weight-medium);
-  color: var(--text);
-  line-height: var(--line-height-small);
-  font-family: var(--font-family);
-}
-
-.ms-modal-info-bullets {
+/* Publish modal body content */
+.ms-publish-info-list {
   margin: 0;
   padding-left: var(--space-200);
   display: flex;
   flex-direction: column;
-  gap: var(--space-050);
-}
-
-.ms-modal-info-bullets li {
-  font-size: var(--font-size-small);
-  color: var(--text-light);
-  line-height: var(--line-height-small);
-  font-family: var(--font-family);
+  gap: var(--space-075);
+  font-size: var(--font-size);
+  line-height: var(--line-height);
+  color: var(--text);
 }
 
 .ms-modal-field {
+  margin-top: var(--space-200);
   display: flex;
   flex-direction: column;
   gap: var(--space-075);
@@ -3607,13 +3425,143 @@
 .ms-modal-textarea::placeholder { color: var(--text-placeholder); }
 .ms-modal-textarea:focus-visible { box-shadow: var(--focus-shadow-border); }
 
-.ms-modal-footer {
+/* ─── Empty State ────────────────────────────────────────────────────────── */
+
+.ax-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-200);
+  padding: var(--space-300);
+  width: 248px;
+}
+
+.ax-empty-state--wrap {
+  width: auto;
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-card);
+  padding: var(--space-400);
+  justify-content: center;
+}
+
+.ax-empty-state__illustration { flex-shrink: 0; }
+
+.ax-empty-state__icon {
+  display: flex;
+  width: 48px;
+  height: 48px;
+  padding: var(--space-100);
+  align-items: flex-start;
+  border-radius: var(--radius-round);
+  background: var(--primary-200);
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+.ax-empty-state__icon-glyph {
+  flex: 1 0 0;
+  height: 100%;
+  font-size: 32px;
+  color: var(--primary-700);
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  gap: var(--space-100);
-  padding: var(--space-200) var(--space-300);
+  justify-content: center;
+  font-style: normal;
+  line-height: 1;
+}
+
+.ax-empty-state__content { width: 100%; }
+
+.ax-empty-state__text {
+  width: 224px;
+  text-align: center;
+}
+
+.ax-empty-state__headline {
+  margin: 0;
+  font-size: var(--font-size-medium);
+  font-weight: var(--font-weight-medium);
+  color: var(--text);
+  line-height: var(--line-height-medium);
+  font-family: var(--font-family);
+}
+
+.ax-empty-state__subtitle {
+  margin: 0;
+  font-size: var(--font-size-small);
+  font-weight: var(--font-weight-normal);
+  color: var(--text-light);
+  line-height: var(--line-height);
+  font-family: var(--font-family);
+}
+
+.ax-empty-state__actions {
+  width: 100%;
+  align-items: center;
+}
+
+/* ─── Milestones — No-units empty state ──────────────────────────────────── */
+
+.ms-milestone-no-units {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--space-300);
+}
+
+.ms-unit-search {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.ms-unit-search-results {
+  background-color: var(--bg-content);
+  border: 1px solid var(--border-medium);
+  border-top: none;
+  border-radius: 0 0 var(--radius-element) var(--radius-element);
+  display: flex;
+  flex-direction: column;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.ms-unit-search-results .ax-input-wrapper {
+  border-radius: var(--radius-element) var(--radius-element) 0 0;
+}
+
+.ms-unit-search-result {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--space-100) var(--space-125);
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  width: 100%;
+  transition: background-color 0.1s;
+}
+
+.ms-unit-search-result + .ms-unit-search-result {
   border-top: 1px solid var(--border-medium);
+}
+
+.ms-unit-search-result:hover { background-color: var(--bg-secondary-hover); }
+
+.ms-unit-search-result-name {
+  font-size: var(--font-size-small);
+  font-weight: var(--font-weight-medium);
+  color: var(--text);
+  line-height: var(--line-height-small);
+  font-family: var(--font-family);
+}
+
+.ms-unit-search-result-sub {
+  font-size: var(--font-size-xsmall);
+  color: var(--text-light);
+  line-height: var(--line-height-xsmall);
+  font-family: var(--font-family);
 }
 
 /* ─── Milestones — Units Tab ─────────────────────────────────────────────── */
@@ -3672,40 +3620,6 @@
   box-shadow: var(--focus-shadow-border);
 }
 
-.ms-units-table-wrap {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  overflow-y: auto;
-}
-
-.ms-units-table-header {
-  display: flex;
-  align-items: center;
-  height: 40px;
-  padding: 0 var(--space-300);
-  border-bottom: 1px solid var(--border-medium);
-  background-color: var(--bg);
-}
-
-.ms-units-col-label {
-  font-size: var(--font-size-small);
-  font-weight: var(--font-weight-medium);
-  color: var(--text-light);
-}
-
-.ms-units-row {
-  display: flex;
-  align-items: center;
-  min-height: 48px;
-  padding: var(--space-100) var(--space-300);
-  border-bottom: 1px solid var(--border-light);
-}
-
-.ms-units-row:hover {
-  background-color: var(--bg-secondary);
-}
-
 .ms-units-cell {
   display: flex;
   flex-direction: column;
@@ -3720,49 +3634,6 @@
 
 .ms-units-subline {
   font-size: var(--font-size-xsmall);
-  color: var(--text-light);
-}
-
-.ms-units-empty {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  flex: 1;
-  padding: var(--space-400) var(--space-300);
-  gap: var(--space-150);
-  text-align: center;
-}
-
-.ms-units-empty-icon {
-  font-size: 32px;
-  color: var(--text-disabled);
-}
-
-.ms-units-empty-title {
-  margin: 0;
-  font-size: var(--font-size);
-  font-weight: var(--font-weight-medium);
-  color: var(--text);
-}
-
-.ms-units-empty-sub {
-  margin: 0;
-  font-size: var(--font-size-small);
-  color: var(--text-light);
-}
-
-.ms-units-footer {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  height: 48px;
-  padding: 0 var(--space-300);
-  border-top: 1px solid var(--border-medium);
-}
-
-.ms-units-count {
-  font-size: var(--font-size-small);
   color: var(--text-light);
 }
 

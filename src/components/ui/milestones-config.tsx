@@ -1,8 +1,9 @@
-import { useState, useMemo } from 'react'
-import { TopBar } from 'ax-arc-prototyping'
+import { useState, useMemo, useRef } from 'react'
+import { TopBar, Table, Modal, ThumbnailItem, Card, Avatar, Input } from 'ax-arc-prototyping'
+import { EmptyState } from '@/components/ui/empty-state'
+import type { ColumnDef } from 'ax-arc-prototyping'
 import { Button, IconButton } from '@/components/ui/button'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Avatar } from '@/components/ui/avatar'
 import { Tooltip } from '@/components/ui/tooltip'
 import { StatusChip } from '@/components/ui/status-chip'
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select'
@@ -33,48 +34,6 @@ interface Milestone {
 
 // ─── Mock data ────────────────────────────────────────────────────────────────
 
-const SEED_MILESTONES: Milestone[] = [
-  {
-    id: 'm1',
-    name: 'Your team',
-    activeUnitId: 'u1',
-    units: [
-      {
-        id: 'u1',
-        name: 'SITHC1016 - Japanese cooking',
-        criteriaCount: 3,
-        requiredHours: 40,
-        activities: [
-          { id: 'a1', title: 'Prepare pizza',  metric: '15 reps', type: 'activity' },
-          { id: 'a2', title: 'Prepare pasta',  metric: '20 hrs',  type: 'time'     },
-        ],
-      },
-      {
-        id: 'u2',
-        name: 'SITHCCC0011 - Italian cooking',
-        criteriaCount: 2,
-        requiredHours: 30,
-        activities: [],
-      },
-    ],
-  },
-  {
-    id: 'm2',
-    name: 'Advanced skills',
-    activeUnitId: 'u3',
-    units: [
-      {
-        id: 'u3',
-        name: 'SITHC1016 - Japanese cooking',
-        criteriaCount: 3,
-        requiredHours: 40,
-        activities: [
-          { id: 'a3', title: 'Prepare sushi', metric: '10 reps', type: 'activity' },
-        ],
-      },
-    ],
-  },
-]
 
 interface QualUnit {
   id: string
@@ -95,6 +54,19 @@ const SEED_QUAL_UNITS: QualUnit[] = [
   { id: 'qu10', name: 'SITHPAT016',                            subline: 'Produce desserts'                          },
   { id: 'qu11', name: 'SITXFSA005',                            subline: 'Use hygienic practices for food safety'    },
   { id: 'qu12', name: 'SITXFSA006',                            subline: 'Participate in safe food handling practices' },
+]
+
+const UNIT_COLUMNS: ColumnDef<QualUnit>[] = [
+  {
+    accessorKey: 'name',
+    header: 'Unit',
+    cell: ({ row }) => (
+      <div className="ms-units-cell">
+        <span className="ms-units-name">{row.original.name}</span>
+        <span className="ms-units-subline">{row.original.subline}</span>
+      </div>
+    ),
+  },
 ]
 
 function UnitsTab({ units }: { units: QualUnit[] }) {
@@ -121,43 +93,19 @@ function UnitsTab({ units }: { units: QualUnit[] }) {
           />
         </div>
       </div>
-
-      <div className="ms-units-table-wrap">
-        <div className="ms-units-table-header">
-          <span className="ms-units-col-label">Unit</span>
-        </div>
-
-        {filtered.length === 0 ? (
-          <div className="ms-units-empty">
-            <i className="icon-contact-user-search-people ms-units-empty-icon" aria-hidden="true" />
-            <p className="ms-units-empty-title">We couldn't find any results</p>
-            <p className="ms-units-empty-sub">Try removing or adjusting filters or search criteria</p>
-          </div>
-        ) : (
-          filtered.map(unit => (
-            <div key={unit.id} className="ms-units-row">
-              <div className="ms-units-cell">
-                <span className="ms-units-name">{unit.name}</span>
-                <span className="ms-units-subline">{unit.subline}</span>
-              </div>
-            </div>
-          ))
-        )}
-      </div>
-
-      {filtered.length > 0 && (
-        <div className="ms-units-footer">
-          <span className="ms-units-count">1–{filtered.length} of {filtered.length}</span>
-        </div>
-      )}
+      <Table
+        data={filtered}
+        columns={UNIT_COLUMNS}
+        selectable={false}
+        pageSize={20}
+        pageSizeOptions={[10, 20, 50]}
+      />
     </div>
   )
 }
 
 const ILLUS_BG = 'https://www.figma.com/api/mcp/asset/9f8df2a7-3791-4061-a185-0200a7bea328'
 const ILLUS_FG = 'https://www.figma.com/api/mcp/asset/77a3cb7b-1446-4b56-af53-21aec6c01bf1'
-
-let _nextId = 3
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
@@ -173,23 +121,27 @@ interface StepCardProps {
 function StepCard({ index, milestone, isSelected, activeUnitId, onSelect, onUnitSelect }: StepCardProps) {
   const collapsed = !isSelected
   return (
-    <div
+    <Card
       className={`ms-step-card ${collapsed ? 'ms-step-card--collapsed' : ''}`}
       onClick={collapsed ? onSelect : undefined}
     >
-      <div className="ms-step-card-header">
-        <div className="ms-step-num">{index}</div>
-        <div className="ms-step-info">
-          <span className="ms-step-name">{milestone.name}</span>
-          <span className="ms-step-units-count">{milestone.units.length} unit{milestone.units.length !== 1 ? 's' : ''}</span>
-        </div>
-        <IconButton
-          icon="icon-chevron-down"
-          buttonStyle={false}
-          size={20}
-          onClick={(e) => { e.stopPropagation(); onSelect() }}
-        />
-      </div>
+      <ThumbnailItem
+        className={`ms-step-card-header ${isSelected ? 'ms-step-card-header--active' : ''}`}
+        avatar={isSelected
+          ? <Avatar mode="initials" initials={String(index)} shape="circle" theme="shadow" />
+          : <div className="ms-step-num">{index}</div>
+        }
+        title={milestone.name}
+        subline={`${milestone.units.length} unit${milestone.units.length !== 1 ? 's' : ''}`}
+        rightSlot={milestone.units.length > 0 ? (
+          <IconButton
+            icon="icon-chevron-down"
+            buttonStyle={false}
+            size={20}
+            onClick={(e: React.MouseEvent) => { e.stopPropagation(); onSelect() }}
+          />
+        ) : undefined}
+      />
       {!collapsed && milestone.units.length > 0 && (
         <div className="ms-step-nav">
           {milestone.units.map(unit => (
@@ -203,7 +155,7 @@ function StepCard({ index, milestone, isSelected, activeUnitId, onSelect, onUnit
           ))}
         </div>
       )}
-    </div>
+    </Card>
   )
 }
 
@@ -211,61 +163,117 @@ interface UnitCardItemProps {
   unit: UnitCard
   expanded: boolean
   onToggle: () => void
+  onRemove: () => void
+  disabled?: boolean
 }
 
-function UnitCardItem({ unit, expanded }: UnitCardItemProps) {
+function UnitCardItem({ unit, expanded, onRemove, disabled }: UnitCardItemProps) {
   const [open, setOpen] = useState(expanded)
   return (
-    <div className={`ms-unit-card ${open ? 'ms-unit-card--expanded' : ''}`}>
+    <Card className={`ms-unit-card ${open ? 'ms-unit-card--expanded' : ''}`}>
       <div className="ms-unit-card-header" onClick={() => setOpen(v => !v)}>
         <div className="ms-unit-card-header-text">
           <span className="ms-unit-name">{unit.name}</span>
           <span className="ms-unit-criteria">{unit.criteriaCount} criteria</span>
         </div>
-        <i className={`ms-unit-chevron icon-chevron-down`} />
+        {!disabled && (
+          <IconButton
+            icon="icon-bin"
+            size={20}
+            className="ms-unit-remove-btn"
+            onClick={e => { e.stopPropagation(); onRemove() }}
+          />
+        )}
+        <i className="ms-unit-chevron icon-chevron-down" />
       </div>
       {open && (
         <div className="ms-unit-card-body">
-          {/* Required hours */}
           <div className="ms-unit-section">
             <span className="ms-unit-section-label">Required hours</span>
             <div className="ms-unit-items-box">
-              <div className="ms-unit-item">
-                <div className="ms-unit-item-avatar">
-                  <i className="icon-calendar-outline" />
-                </div>
-                <div className="ms-unit-item-text">
-                  <span className="ms-unit-item-title">Total unit hours</span>
-                  <span className="ms-unit-item-meta">{unit.requiredHours} hrs</span>
-                </div>
-              </div>
+              <ThumbnailItem
+                className="ms-unit-item"
+                avatar={<Avatar mode="icon" icon={<i className="icon-calendar-outline" />} shape="square" theme="flat" />}
+                title="Total unit hours"
+                subline={`${unit.requiredHours} hrs`}
+              />
             </div>
           </div>
-          {/* Activities */}
           {unit.activities.length > 0 && (
             <div className="ms-unit-section">
               <span className="ms-unit-section-label">Activities</span>
               <div className="ms-unit-items-box">
                 {unit.activities.map(activity => (
-                  <div key={activity.id} className="ms-unit-item">
-                    <div className="ms-unit-item-avatar">
-                      <i className={activity.type === 'time' ? 'icon-calendar-outline' : 'icon-shapes-types-categories'} />
-                    </div>
-                    <div className="ms-unit-item-text">
-                      <span className="ms-unit-item-title">{activity.title}</span>
-                      <span className="ms-unit-item-meta">{activity.metric}</span>
-                    </div>
-                  </div>
+                  <ThumbnailItem
+                    key={activity.id}
+                    className="ms-unit-item"
+                    avatar={<Avatar mode="icon" icon={<i className={activity.type === 'time' ? 'icon-calendar-outline' : 'icon-shapes-types-categories'} />} shape="square" theme="flat" />}
+                    title={activity.title}
+                    subline={activity.metric}
+                  />
                 ))}
               </div>
             </div>
           )}
         </div>
       )}
-    </div>
+    </Card>
   )
 }
 
+
+// ─── Unit Search Input ────────────────────────────────────────────────────────
+
+interface UnitSearchInputProps {
+  milestoneUnitIds: Set<string>
+  onAddUnit: (unit: QualUnit) => void
+}
+
+function UnitSearchInput({ milestoneUnitIds, onAddUnit }: UnitSearchInputProps) {
+  const [search, setSearch] = useState('')
+  const [focused, setFocused] = useState(false)
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  const results = useMemo(() => {
+    const q = search.trim().toLowerCase()
+    if (!q) return []
+    return SEED_QUAL_UNITS.filter(u =>
+      !milestoneUnitIds.has(u.id) &&
+      (u.name.toLowerCase().includes(q) || u.subline.toLowerCase().includes(q))
+    )
+  }, [search, milestoneUnitIds])
+
+  const showResults = focused && results.length > 0
+
+  return (
+    <div className="ms-unit-search">
+      <Input
+        ref={inputRef}
+        leftIcon={<i className="icon-contact-user-search-people" />}
+        placeholder="Search units to add"
+        value={search}
+        onChange={e => setSearch(e.target.value)}
+        onFocus={() => setFocused(true)}
+        onBlur={() => setTimeout(() => setFocused(false), 100)}
+      />
+      {showResults && (
+        <div className="ms-unit-search-results">
+          {results.map(unit => (
+            <button
+              key={unit.id}
+              type="button"
+              className="ms-unit-search-result"
+              onMouseDown={e => { e.preventDefault(); onAddUnit(unit); setSearch(''); inputRef.current?.blur() }}
+            >
+              <span className="ms-unit-search-result-name">{unit.name}</span>
+              <span className="ms-unit-search-result-sub">{unit.subline}</span>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
 
 // ─── Publish Modal ────────────────────────────────────────────────────────────
 
@@ -278,46 +286,44 @@ interface PublishModalProps {
 function PublishModal({ version, onCancel, onPublish }: PublishModalProps) {
   const [note, setNote] = useState('')
   return (
-    <div className="ms-modal-overlay">
-      <div className="ms-modal">
-        <div className="ms-modal-header">
-          <span className="ms-modal-title">Publish Version {version}</span>
-          <IconButton icon="icon-x-thick" buttonStyle={false} size={20} onClick={onCancel} />
-        </div>
-        <div className="ms-modal-body">
-          <div className="ms-modal-info">
-            <i className="icon-info-outline ms-modal-info-icon" />
-            <div className="ms-modal-info-content">
-              <span className="ms-modal-info-title">Publishing this version will:</span>
-              <ul className="ms-modal-info-bullets">
-                <li>Lock this configuration from further edits</li>
-                <li>Make this version available in Learning Plans</li>
-                <li>Allow 3rd-party reports to be generated</li>
-              </ul>
-            </div>
-          </div>
-          <div className="ms-modal-field">
-            <label className="ms-modal-label">Changes made</label>
-            <textarea
-              className="ms-modal-textarea"
-              placeholder="Summarise changes made in this version"
-              value={note}
-              onChange={e => setNote(e.target.value)}
-            />
-          </div>
-        </div>
-        <div className="ms-modal-footer">
-          <Button variant="outline" onClick={onCancel}>Cancel</Button>
-          <Button variant="default" disabled={!note.trim()} onClick={() => onPublish(note)}>Publish</Button>
+    <Modal
+      open={true}
+      onClose={onCancel}
+      title={`Publish Version ${version}`}
+      primaryLabel="Publish"
+      onPrimary={() => { if (note.trim()) onPublish(note) }}
+      secondaryLabel="Cancel"
+      onSecondary={onCancel}
+      width={600}
+    >
+      <div className="ax-info-block ax-info-block--info ax-info-block--multi">
+        <i className="ax-info-block-icon icon-info-outline" aria-hidden="true" />
+        <div className="ax-info-block-content">
+          <p className="ax-info-block-title">Publishing a new qualification configuration version</p>
+          <ul className="ms-publish-info-list">
+            <li>Future placements will automatically use the latest version</li>
+            <li>Any placements in an <strong>In Progress, Completed</strong> or <strong>Cancelled</strong> state on this qualification will remain on the version they started on</li>
+            <li>Any placements in a <strong>Not Started</strong> state will start on the latest version with their 1st attempt</li>
+          </ul>
         </div>
       </div>
-    </div>
+      <div className="ms-modal-field">
+        <label className="ms-modal-label">Changes made</label>
+        <textarea
+          className="ms-modal-textarea"
+          placeholder="Summarise changes made in this version"
+          value={note}
+          onChange={e => setNote(e.target.value)}
+        />
+      </div>
+    </Modal>
   )
 }
 
 // ─── Main component ───────────────────────────────────────────────────────────
 
 export function MilestonesConfigPage() {
+  const _nextId = useRef(0)
   const [milestones, setMilestones]       = useState<Milestone[]>([])
   const [selectedId, setSelectedId]       = useState<string | null>(null)
   const [activeUnitIds, setActiveUnitIds] = useState<Record<string, string | null>>({})
@@ -331,7 +337,7 @@ export function MilestonesConfigPage() {
   const selectedIdx = selected ? milestones.findIndex(m => m.id === selected.id) : 0
 
   function selectMilestone(id: string) {
-    setSelectedId(id)
+    setSelectedId(prev => prev === id ? null : id)
   }
 
   function selectUnit(milestoneId: string, unitId: string) {
@@ -345,19 +351,24 @@ export function MilestonesConfigPage() {
   }
 
   function addMilestone() {
-    if (milestones.length === 0) {
-      setMilestones(SEED_MILESTONES)
-      setSelectedId(SEED_MILESTONES[0].id)
-      const ids: Record<string, string | null> = {}
-      SEED_MILESTONES.forEach(m => { ids[m.id] = m.activeUnitId })
-      setActiveUnitIds(ids)
-    } else {
-      const newId  = `m${++_nextId}`
-      const newMs: Milestone = { id: newId, name: `Milestone ${_nextId}`, activeUnitId: null, units: [] }
-      setMilestones(prev => [...prev, newMs])
-      setSelectedId(newId)
-      setActiveUnitIds(prev => ({ ...prev, [newId]: null }))
-    }
+    const newId = `m${++_nextId.current}`
+    const newMs: Milestone = { id: newId, name: 'Untitled milestone', activeUnitId: null, units: [] }
+    setMilestones(prev => [...prev, newMs])
+    setSelectedId(newId)
+    setActiveUnitIds(prev => ({ ...prev, [newId]: null }))
+  }
+
+  function addUnitToMilestone(milestoneId: string, qualUnit: QualUnit) {
+    const newUnit: UnitCard = { id: qualUnit.id, name: qualUnit.name, criteriaCount: 0, requiredHours: 0, activities: [] }
+    setMilestones(prev => prev.map(m =>
+      m.id === milestoneId ? { ...m, units: [...m.units, newUnit] } : m
+    ))
+  }
+
+  function removeUnitFromMilestone(milestoneId: string, unitId: string) {
+    setMilestones(prev => prev.map(m =>
+      m.id === milestoneId ? { ...m, units: m.units.filter(u => u.id !== unitId) } : m
+    ))
   }
 
   const activeUnitId = selected ? (activeUnitIds[selected.id] ?? selected.activeUnitId) : null
@@ -508,20 +519,21 @@ export function MilestonesConfigPage() {
                 <div className="ms-right-content">
 
                   {/* Context header */}
-                  <div className="ms-context-header">
-                    <Avatar mode="initials" initials={String(selectedIdx + 1)} shape="circle" theme="shadow" className="ms-context-num" />
-                    <div className="ms-context-info">
-                      <span className="ms-context-title">{selected.name}</span>
-                      <span className="ms-context-sub">{selected.units.length} unit{selected.units.length !== 1 ? 's' : ''}</span>
-                    </div>
-                    <div className="ms-context-actions">
-                      <IconButton icon="icon-settings1" size={20} />
-                      <IconButton icon="icon-bin" size={20} onClick={() => removeMilestone(selected.id)} />
-                    </div>
-                  </div>
+                  <ThumbnailItem
+                    className="ms-context-header"
+                    avatar={<Avatar mode="initials" initials={String(selectedIdx + 1)} shape="circle" theme="shadow" />}
+                    title={selected.name}
+                    subline={`${selected.units.length} unit${selected.units.length !== 1 ? 's' : ''}`}
+                    rightSlot={
+                      <div className="ms-context-actions">
+                        <IconButton icon="icon-settings1" size={20} disabled={versionStatus === 'published'} />
+                        <IconButton icon="icon-bin" size={20} disabled={versionStatus === 'published'} onClick={() => removeMilestone(selected.id)} />
+                      </div>
+                    }
+                  />
 
                   {/* Milestone card */}
-                  <div className="ms-milestone-card">
+                  <Card className="ms-milestone-card" gap="250">
                     {selected.units.length > 0 ? (
                       <>
                         {selected.units.map((unit, i) => (
@@ -530,20 +542,43 @@ export function MilestonesConfigPage() {
                             unit={unit}
                             expanded={i === 0 || activeUnitId === unit.id}
                             onToggle={() => selectUnit(selected.id, unit.id)}
+                            onRemove={() => removeUnitFromMilestone(selected.id, unit.id)}
+                            disabled={versionStatus === 'published'}
                           />
                         ))}
-                        <div className="ms-add-unit-row">
-                          <Button variant="outline" leftIcon={<i className="ax-icon icon-add" />}>
-                            Add unit
-                          </Button>
-                        </div>
+                        {versionStatus === 'published' ? (
+                          <Tooltip content="Create a new version to edit" side="top">
+                            <span className="ms-tooltip-wrap">
+                              <Button variant="outline" disabled leftIcon={<i className="ax-icon icon-add" />}>
+                                Add unit
+                              </Button>
+                            </span>
+                          </Tooltip>
+                        ) : (
+                          <UnitSearchInput
+                            milestoneUnitIds={new Set(selected.units.map(u => u.id))}
+                            onAddUnit={u => addUnitToMilestone(selected.id, u)}
+                          />
+                        )}
                       </>
                     ) : (
-                      <Button variant="outline" leftIcon={<i className="ax-icon icon-add" />}>
-                        Add unit
-                      </Button>
+                      <div className="ms-milestone-no-units">
+                        <EmptyState
+                          illustration={false}
+                          icon
+                          iconName="add"
+                          mainLine="Begin by adding a unit to your milestone"
+                          subtitle="Milestones are groups of units and their criteria for your learner to complete as part of their placement"
+                          primary={false}
+                          secondary={false}
+                        />
+                        <UnitSearchInput
+                          milestoneUnitIds={new Set(selected.units.map(u => u.id))}
+                          onAddUnit={u => addUnitToMilestone(selected.id, u)}
+                        />
+                      </div>
                     )}
-                  </div>
+                  </Card>
 
                 </div>
               </div>
